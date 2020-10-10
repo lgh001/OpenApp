@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">OpenApp</string>
+
+    <string name="main_tab_home_text">首页</string>
+    <string name="main_tab_cate_text">知识体系</string>
+    <string name="main_tab_common_text">公众号</string>
+
+
+
 </resources>
