@@ -20,6 +20,9 @@ open class BaseViewModel : ViewModel() {
     var isShowLoading = MutableLiveData<Boolean>()//是否显示loading
     var errorData = MutableLiveData<ErrorResult>()
     var isLoadFinish = MutableLiveData<Boolean>()
+    val noMore = MutableLiveData<Boolean>()
+    val isFirstPage = MutableLiveData<Boolean>()
+    val loadSuccess = MutableLiveData<Boolean>()
 
     fun showLoading() {
         isShowLoading.value = true
@@ -34,4 +37,12 @@ open class BaseViewModel : ViewModel() {
         isLoadFinish.value = true
     }
 
+    fun noMore(firstPage: Boolean) {
+        isFirstPage.value = firstPage
+        noMore.value = true
+    }
+
+    fun loadSuccess(){
+        loadSuccess.value=true
+    }
 }

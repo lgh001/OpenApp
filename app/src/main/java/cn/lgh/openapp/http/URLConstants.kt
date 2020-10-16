@@ -51,4 +51,10 @@ object URLConstants {
     const val GET_TREE_URL="tree/json"
 
 
+    /**
+     * 知识体系下的文章
+     * cid 分类的id，上述二级目录的id
+     * 页码：拼接在链接上，从0开始。
+     */
+    const val GET_ARTICLE_LIST_BY_ID="article/list/{page}/json"
 }

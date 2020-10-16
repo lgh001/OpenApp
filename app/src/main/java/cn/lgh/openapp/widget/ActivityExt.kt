@@ -23,11 +23,17 @@ import kotlin.reflect.KClass
 
 
 fun Activity.toast(msg: String?) {
-    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    //兼容小米手机toast前面带应用名问题
+    val toast=Toast.makeText(this,null,Toast.LENGTH_SHORT)
+    toast.setText(msg)
+    toast.show()
 }
 
 fun Context.toast(msg: String?) {
-    Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    //兼容小米手机toast前面带应用名问题
+    val toast=Toast.makeText(this,null,Toast.LENGTH_SHORT)
+    toast.setText(msg)
+    toast.show()
 }
 
 fun Fragment.toast(msg: String?) = this.activity?.run {

@@ -1,6 +1,7 @@
 package cn.lgh.openapp.ui
 
 import android.content.Intent
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import cn.lgh.openapp.ui.main.MainActivity
@@ -10,6 +11,7 @@ import cn.lgh.openapp.ui.base.BaseViewModel
 import cn.lgh.openapp.utils.PermissionUtil
 import cn.lgh.openapp.utils.StatusBarUtil
 import cn.lgh.openapp.widget.toast
+import com.gyf.immersionbar.ImmersionBar
 import com.yanzhenjie.permission.runtime.Permission
 
 /**
@@ -19,8 +21,10 @@ import com.yanzhenjie.permission.runtime.Permission
  */
 class SplashActivity : BaseActivity<BaseViewModel, ActivitySplashBinding>() {
     override fun initView() {
-//        StatusBarUtil.immersive(this)
-//        StatusBarUtil.darkMode(this)
+        ImmersionBar.with(this)
+            .transparentBar()
+            .statusBarDarkFont(true)
+            .init()
         if (!this.isTaskRoot) {
             val mainIntent = intent
             val action = mainIntent.action
@@ -51,10 +55,10 @@ class SplashActivity : BaseActivity<BaseViewModel, ActivitySplashBinding>() {
     override fun initListener() {
     }
 
-    override fun initData() {
+    override fun initVM() {
     }
 
-    override fun initVM() {
+    override fun initData(bundle: Bundle?) {
     }
 
 }

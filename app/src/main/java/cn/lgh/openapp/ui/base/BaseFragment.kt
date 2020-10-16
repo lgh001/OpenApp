@@ -2,20 +2,17 @@ package cn.lgh.openapp.ui.base
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
-import cn.lgh.openapp.R
 import cn.lgh.openapp.event.EventCode
 import cn.lgh.openapp.event.EventMassage
 import cn.lgh.openapp.http.error.ErrorResult
+import cn.lgh.openapp.widget.pagestate.PageStateLayout
 import cn.lgh.openapp.widget.toast
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import org.greenrobot.eventbus.EventBus
@@ -37,8 +34,6 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
     var mRefreshLayout: SmartRefreshLayout? = null
 
     private var isViewCreated = false
-    private var isUIVisible = true
-    var isVisibleToUser = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +67,6 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isViewCreated = true
-        lazyLoad()
     }
 
     private fun init() {
@@ -91,6 +85,20 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
                 loadFinish()
             }
         })
+
+        vm.noMore.observe(this, Observer {
+            if (it) {
+                noMore()
+            }
+        })
+
+        vm.isFirstPage.observe(this, Observer {
+
+        })
+
+        vm.loadSuccess.observe(this, Observer {
+
+        })
     }
 
     open fun errorResult(errorResult: ErrorResult) {}
@@ -104,6 +112,11 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
     fun loadFinish() {
         mRefreshLayout?.finishRefresh()
         mRefreshLayout?.finishLoadMore()
+    }
+
+
+    fun noMore() {
+        mRefreshLayout?.finishLoadMoreWithNoMoreData()
     }
 
     @Subscribe
@@ -121,11 +134,22 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
 
     abstract fun lazyLoadData()
 
+    /**
+     * 懒加载实现方式
+     * 1.如果是用旧版本的Viewpager+Fragment方式，需要在setUserVisibleHint()方法里面设置，当页面可见，会回调
+     *   isVisibleToUser=true,不可见isVisibleToUser=false
+     * 2.如果使用FragmentStatePagerAdapter，并且设置了Behavior=BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT.
+     *   那么，setUserVisibleHint将不会回调，而是通过FragmentTransaction.setMaxLifecycle()来控制，
+     *   简单点来说就是，当Behavior=BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT时，可见的Fragment生命周期会
+     *   走到onResume(相当于isVisibleToUser=true),不可见的时候，生命周期走到onStart(相当于isVisibleToUser=false)
+     *   具体源码看{@link FragmentStatePagerAdapter#instantiateItem}
+     *   所以这种方式实现懒加载非常简单，只需要在onResume的时候回调懒加载方法，并且加个变量保证懒加载只执行一次
+     * 总体来说，更推荐方式2,实现更简单
+     */
     private fun lazyLoad() {
-        if (isViewCreated && isUIVisible) {
+        if (isViewCreated) {
             lazyLoadData()
             isViewCreated = false
-            isUIVisible = false
         }
     }
 
@@ -160,16 +184,6 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
         }
     }
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        this.isVisibleToUser = isVisibleToUser
-        if (isVisibleToUser) {
-            isUIVisible = true
-            lazyLoad()
-        } else {
-            isUIVisible = false
-        }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -179,6 +193,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         contentView = null
+        isViewCreated = false
     }
 
     override fun onDestroy() {

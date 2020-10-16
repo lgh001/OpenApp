@@ -8,7 +8,7 @@ import cn.lgh.openapp.bean.ArticleInfo
 import cn.lgh.openapp.bean.BannerInfo
 import cn.lgh.openapp.databinding.FragmentHomeBinding
 import cn.lgh.openapp.ui.base.BaseFragment
-import cn.lgh.openapp.ui.main.home.adapter.HomeAdapter
+import cn.lgh.openapp.ui.main.home.adapter.ArticleAdapter
 import cn.lgh.openapp.ui.main.home.adapter.HomeBannerAdapter
 import cn.lgh.openapp.ui.main.home.vm.HomeViewModel
 import cn.lgh.openapp.utils.Utils
@@ -23,7 +23,7 @@ import com.youth.banner.Banner
  */
 class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
-    var adapter: HomeAdapter? = null
+    var adapter: ArticleAdapter? = null
     var banner: Banner<BannerInfo, HomeBannerAdapter>? = null
 
     private val listData = mutableListOf<ArticleInfo>()
@@ -34,7 +34,7 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
         v.recyclerView.addItemDecoration(
             ItemDecorationWidget(0, Utils.getRealPixel(20),includeHeadFooter = false))
 
-        adapter = HomeAdapter(listData)
+        adapter = ArticleAdapter(listData)
         v.recyclerView.adapter = adapter
 
         val view = layoutInflater.inflate(R.layout.view_home_banner, null) as ViewGroup
@@ -54,6 +54,10 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
     override fun initListener() {
         adapter?.setOnItemClickListener { adapter, view, position ->
             toast(listData[position].link)
+        }
+
+        adapter?.onFavoriteClickListener={
+
         }
     }
 

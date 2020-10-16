@@ -5,11 +5,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.bean.Leaf
 import cn.lgh.openapp.databinding.FragmentKnowledgeTreeBinding
 import cn.lgh.openapp.ui.base.BaseFragment
+import cn.lgh.openapp.ui.main.articlelist.ArticleListActivity
 import cn.lgh.openapp.ui.main.knowledgetree.adapter.KnowledgeTreeAdapter
 import cn.lgh.openapp.ui.main.knowledgetree.vm.KnowledgeTreeViewModel
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.ItemDecorationWidget
-import cn.lgh.openapp.widget.toast
+import cn.lgh.openapp.widget.startActivity
 
 /**
  * @author lgh
@@ -22,7 +23,8 @@ class KnowledgeTreeFragment : BaseFragment<KnowledgeTreeViewModel, FragmentKnowl
     private var mAdapter: KnowledgeTreeAdapter? = null
 
     override fun initView() {
-        v.recyclerView.layoutManager = LinearLayoutManager(context)
+        val lm = LinearLayoutManager(context)
+        v.recyclerView.layoutManager = lm
         v.recyclerView.addItemDecoration(
             ItemDecorationWidget(0, Utils.getRealPixel(20))
         )
@@ -32,7 +34,23 @@ class KnowledgeTreeFragment : BaseFragment<KnowledgeTreeViewModel, FragmentKnowl
 
     override fun initListener() {
         mAdapter?.setOnItemClickListener { adapter, view, position ->
-            toast(mKnowledgeTreeData[position].name)
+            startActivity<ArticleListActivity>(
+                Pair(
+                    ArticleListActivity.CATE_ID,
+                    mKnowledgeTreeData[position].children[0].id
+                ),
+                Pair(
+                    ArticleListActivity.CATE_NAME,
+                    mKnowledgeTreeData[position].children[0].name
+                )
+            )
+        }
+
+        mAdapter?.tagClickListener = {
+            startActivity<ArticleListActivity>(
+                Pair(ArticleListActivity.CATE_ID, it.id),
+                Pair(ArticleListActivity.CATE_NAME, it.name)
+            )
         }
     }
 
