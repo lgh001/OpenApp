@@ -150,14 +150,18 @@ class PageStateLayout : FrameLayout {
 
     private fun getEmptyView(): IView? {
         mEmptyView = mEmptyView ?: sEmptyViewCreator?.createView(context)?.also {
-            onClick?.invoke(currentStatus)
+            it.onClick={
+                onClick?.invoke(currentStatus)
+            }
         }
         return mEmptyView
     }
 
     private fun getErrorView(): IView? {
         mErrorView = mErrorView ?: sErrorViewCreator?.createView(context)?.also {
-            onClick?.invoke(currentStatus)
+            it.onClick={
+                onClick?.invoke(currentStatus)
+            }
         }
         return mErrorView
     }

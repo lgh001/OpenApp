@@ -38,4 +38,5 @@ interface ILoadView : IView {
 
 interface IView {
     fun getView(): View
+    var onClick:((View?)->Unit)?
 }

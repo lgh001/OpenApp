@@ -11,9 +11,9 @@ import cn.lgh.openapp.ui.base.BaseFragment
 import cn.lgh.openapp.ui.main.home.adapter.ArticleAdapter
 import cn.lgh.openapp.ui.main.home.adapter.HomeBannerAdapter
 import cn.lgh.openapp.ui.main.home.vm.HomeViewModel
+import cn.lgh.openapp.ui.main.webview.WebViewActivity
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.ItemDecorationWidget
-import cn.lgh.openapp.widget.toast
 import com.youth.banner.Banner
 
 /**
@@ -32,7 +32,8 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
     override fun initView() {
         v.recyclerView.layoutManager = LinearLayoutManager(mContext)
         v.recyclerView.addItemDecoration(
-            ItemDecorationWidget(0, Utils.getRealPixel(20),includeHeadFooter = false))
+            ItemDecorationWidget(0, Utils.getRealPixel(20), includeHeadFooter = false)
+        )
 
         adapter = ArticleAdapter(listData)
         v.recyclerView.adapter = adapter
@@ -53,10 +54,10 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
     override fun initListener() {
         adapter?.setOnItemClickListener { adapter, view, position ->
-            toast(listData[position].link)
+            WebViewActivity.start(context, listData[position].link, listData[position].title)
         }
 
-        adapter?.onFavoriteClickListener={
+        adapter?.onFavoriteClickListener = {
 
         }
     }

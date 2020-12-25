@@ -54,8 +54,7 @@ class KnowledgeTreeFragment : BaseFragment<KnowledgeTreeViewModel, FragmentKnowl
         }
     }
 
-    override fun initData() {
-    }
+    override fun initData() {}
 
     override fun initVM() {
         vm.knowledgeTree.observe(this, Observer {

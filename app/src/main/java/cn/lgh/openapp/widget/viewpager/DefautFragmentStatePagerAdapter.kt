@@ -1,9 +1,7 @@
 package cn.lgh.openapp.widget.viewpager
 
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import cn.lgh.openapp.ui.main.home.HomeFragment
 
 /**
  * @author lgh

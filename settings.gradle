@@ -1,2 +1,10 @@
 include ':app'
+setBinding(new Binding([gradle: this]))
+evaluate(new File(
+  settingsDir,
+  '../login_module/.android/include_flutter.groovy'
+))
 rootProject.name = "OpenApp"
+
+include ':login_module'
+project(':login_module').projectDir = new File('../login_module')

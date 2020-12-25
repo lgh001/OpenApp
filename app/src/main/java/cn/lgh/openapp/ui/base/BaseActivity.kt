@@ -2,32 +2,21 @@ package cn.lgh.openapp.ui.base
 
 import android.content.Context
 import android.content.res.Configuration
-import android.content.res.Resources
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
 import cn.lgh.openapp.R
 import cn.lgh.openapp.event.EventCode
 import cn.lgh.openapp.event.EventMassage
 import cn.lgh.openapp.http.error.ErrorResult
-import cn.lgh.openapp.utils.StatusBarUtil
 import cn.lgh.openapp.widget.pagestate.PageStateLayout
-import cn.lgh.openapp.widget.toast
 import com.gyf.immersionbar.ImmersionBar
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.lang.reflect.ParameterizedType
@@ -37,7 +26,8 @@ import java.lang.reflect.ParameterizedType
  * @date 2020/9/27
  * activity基类  页面尽可能继承此类
  */
-abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatActivity() {
+abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatActivity(), IProcess,
+    IRefresh {
 
     lateinit var mContext: Context
     lateinit var vm: VM
@@ -46,12 +36,12 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
 
     var mRefreshLayout: SmartRefreshLayout? = null
 
-    lateinit var dialog: AlertDialog
-
     /**
      * 用来控制和显示页面状态的view
      */
-    lateinit var mPageState: PageStateLayout
+    private lateinit var mPageState: PageStateLayout
+
+    lateinit var delegate: PageDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +72,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         mPageState.onClick = {
             onReLoad(it)
         }
+        delegate = PageDelegate(this, mRefreshLayout, mPageState, this, vm)
         init()
         preData()
         initView()
@@ -105,73 +96,60 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     abstract fun initData(bundle: Bundle?)
     abstract fun initVM()
 
-    open fun hasRefresh(): Boolean = false
 
     private fun init() {
         EventBus.getDefault().register(this)
-
-        vm.isShowLoading.observe(this, Observer {
-            if (it) showLoading() else hideLoading()
-        })
-        vm.errorData.observe(this, Observer {
-            if (it.show) toast(it.errMsg)
-            errorResult(it)
-        })
-
-        vm.isLoadFinish.observe(this, Observer {
-            if (it) {
-                loadFinish()
-            }
-        })
-
-        vm.noMore.observe(this, Observer {
-            if (it) {
-                noMore()
-            }
-        })
-
-        vm.isFirstPage.observe(this, Observer {
-            if (it) {
-                mPageState.setState(PageStateLayout.Status.EMPTY)
-            }
-        })
-
-        vm.loadSuccess.observe(this, Observer {
-            if (it) {
-                mPageState.setState(PageStateLayout.Status.NORMAL)
-            }
-        })
-    }
-
-    open fun errorResult(errorResult: ErrorResult) {
-        mPageState.setState(PageStateLayout.Status.ERROR)
-    }
-
-    fun showLoading() {
-        mPageState.setState(PageStateLayout.Status.LOADING)
-    }
-
-    fun hideLoading() {
-//        mPageState.setState(PageStateLayout.Status.NORMAL)
-    }
-
-    fun loadFinish() {
-        mRefreshLayout?.finishRefresh()
-    }
-
-    fun noMore() {
-        mRefreshLayout?.finishLoadMoreWithNoMoreData()
-    }
-
-    open fun onReLoad(state: PageStateLayout.Status) {
+        performVM(this, vm)
 
     }
 
-    open fun onRefresh() {
-
+    override fun errorResult(errorResult: ErrorResult) {
+        delegate.errorResult(errorResult)
     }
 
-    open fun onLoadMore() {}
+    override fun showLoading() {
+        delegate.showLoading()
+    }
+
+    override fun hideLoading() {
+        delegate.hideLoading()
+    }
+
+    override fun loadFinish() {
+        delegate.loadFinish()
+    }
+
+    override fun noMore(showStatus: Boolean) {
+        delegate.noMore(showStatus)
+    }
+
+    override fun reset() {
+        delegate.reset()
+    }
+
+    override fun exceptionResult(e: Throwable?) {
+        delegate.exceptionResult(e)
+    }
+
+    override fun pageStatus(status: PageStateLayout.Status) {
+        delegate.pageStatus(status)
+    }
+
+    override fun performVM(owner: LifecycleOwner, vm: BaseViewModel) {
+        delegate.performVM(owner, vm)
+    }
+
+    open fun onReLoad(state: PageStateLayout.Status) {}
+
+    override fun hasRefresh(): Boolean = false
+
+    override fun onRefresh() {
+        vm.isRefresh.value = true
+    }
+
+    override fun onLoadMore() {
+        vm.isRefresh.value = false
+    }
 
     private fun setupRefreshLayout(view: View): View? {
         if (mRefreshLayout == null) {
@@ -186,6 +164,10 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
                 onLoadMore()
             }
         }
+    }
+
+    fun setupPageState(contentView:View){
+        mPageState.setupContentView(contentView)
     }
 
     fun loadRootMultiFragment(id: Int, show: Int, vararg fragment: Fragment) {

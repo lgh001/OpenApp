@@ -27,7 +27,12 @@ class DefaultEmptyView : FrameLayout, IView {
         textView.text = "什么都没有"
         val fp = LayoutParams(LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         addView(textView, fp)
+        textView.setOnClickListener {
+            onClick?.invoke(it)
+        }
     }
+
+    override var onClick: ((View?) -> Unit)?=null
 
     override fun getView(): View = this
 }

@@ -1,22 +1,24 @@
 package cn.lgh.openapp.ui.base
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
 import cn.lgh.openapp.event.EventCode
 import cn.lgh.openapp.event.EventMassage
 import cn.lgh.openapp.http.error.ErrorResult
 import cn.lgh.openapp.widget.pagestate.PageStateLayout
-import cn.lgh.openapp.widget.toast
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import java.lang.reflect.ParameterizedType
 
 /**
@@ -24,7 +26,7 @@ import java.lang.reflect.ParameterizedType
  * @date 2020/9/27
  *
  */
-abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
+abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), IProcess, IRefresh {
 
     lateinit var mContext: Context
     var contentView: View? = null
@@ -33,7 +35,13 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
 
     var mRefreshLayout: SmartRefreshLayout? = null
 
+    /**
+     * 用来控制和显示页面状态的view
+     */
+    private lateinit var mPageState: PageStateLayout
+
     private var isViewCreated = false
+    lateinit var delegate: PageDelegate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +63,11 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
     ): View? {
         if (null == contentView) {
             contentView = if (hasRefresh()) setupRefreshLayout(v.root) else v.root
+            mPageState = PageStateLayout(inflater.context)
+            mPageState.onClick = {
+                onReLoad(it)
+            }
+            delegate = PageDelegate(inflater.context, mRefreshLayout, mPageState, this, vm)
             init()
             initView()
             initListener()
@@ -71,59 +84,52 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
 
     private fun init() {
         EventBus.getDefault().register(this)
-        vm.isShowLoading.observe(this, Observer {
-            if (it) showLoading() else hideLoading()
-        })
-
-        vm.errorData.observe(this, Observer {
-            if (it.show) toast(it.errMsg)
-            errorResult(it)
-        })
-
-        vm.isLoadFinish.observe(this, Observer {
-            if (it) {
-                loadFinish()
-            }
-        })
-
-        vm.noMore.observe(this, Observer {
-            if (it) {
-                noMore()
-            }
-        })
-
-        vm.isFirstPage.observe(this, Observer {
-
-        })
-
-        vm.loadSuccess.observe(this, Observer {
-
-        })
+        performVM(this, vm)
     }
 
-    open fun errorResult(errorResult: ErrorResult) {}
-
-    fun showLoading() {
+    override fun errorResult(errorResult: ErrorResult) {
+        delegate.errorResult(errorResult)
     }
 
-    fun hideLoading() {
+    override fun showLoading() {
+        delegate.showLoading()
     }
 
-    fun loadFinish() {
-        mRefreshLayout?.finishRefresh()
-        mRefreshLayout?.finishLoadMore()
+    override fun hideLoading() {
+        delegate.hideLoading()
+    }
+
+    override fun loadFinish() {
+        delegate.loadFinish()
     }
 
 
-    fun noMore() {
-        mRefreshLayout?.finishLoadMoreWithNoMoreData()
+    override fun noMore(showStatus: Boolean) {
+        delegate.noMore(showStatus)
     }
 
-    @Subscribe
+    override fun reset() {
+        delegate.reset()
+    }
+
+    override fun exceptionResult(e: Throwable?) {
+        delegate.exceptionResult(e)
+    }
+
+    override fun pageStatus(status: PageStateLayout.Status) {
+        delegate.pageStatus(status)
+    }
+
+    override fun performVM(owner: LifecycleOwner, vm: BaseViewModel) {
+        delegate.performVM(owner, vm)
+    }
+
+    open fun onReLoad(state: PageStateLayout.Status) {}
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     open fun handleEvent(msg: EventMassage) {
         when (msg.code) {
-            EventCode.LOGIN_SUCCESS -> {
-            }
+            EventCode.LOGIN_SUCCESS -> { }
         }
     }
 
@@ -153,14 +159,14 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
         }
     }
 
-    open fun hasRefresh(): Boolean = false
+    override fun hasRefresh(): Boolean = false
 
-    open fun onRefresh() {
-
+    override fun onRefresh() {
+        vm.isRefresh.value = true
     }
 
-    open fun onLoadMore() {
-
+    override fun onLoadMore() {
+        vm.isRefresh.value = false
     }
 
     private fun setupRefreshLayout(view: View): View? {
@@ -168,6 +174,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
             mRefreshLayout = SmartRefreshLayout(mContext)
         }
         return mRefreshLayout?.also {
+            it.setBackgroundColor(Color.RED)
             it.addView(
                 view,
                 ViewGroup.LayoutParams(
@@ -184,6 +191,10 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
         }
     }
 
+    fun setupPageState(contentView:View){
+        mPageState.setupContentView(contentView)
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -194,10 +205,6 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment() {
         super.onDestroyView()
         contentView = null
         isViewCreated = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        EventBus.getDefault().register(this)
+        EventBus.getDefault().unregister(this)
     }
 }

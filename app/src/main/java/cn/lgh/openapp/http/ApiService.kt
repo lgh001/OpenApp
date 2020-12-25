@@ -33,4 +33,14 @@ interface ApiService {
         @Path("page") page: Int,
         @Query("cid") id: Int
     ): BaseResult<Article>
+
+    @GET(URLConstants.GET_ARTICLE_WX_LIST_URL)
+    suspend fun getWXArticleList(): BaseResult<MutableList<WXAuthor>>
+
+    @GET(URLConstants.GET_ARTICLE_LIST_BY_ID)
+    suspend fun getWXArticleListById(
+        @Path("page") page: Int,
+        @Query("id") id: Int
+    ): BaseResult<WXArticleResult>
+
 }

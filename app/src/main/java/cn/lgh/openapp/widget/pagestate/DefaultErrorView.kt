@@ -32,7 +32,12 @@ class DefaultErrorView : RelativeLayout, IView {
         val fp = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         fp.addRule(CENTER_IN_PARENT)
         addView(textView, fp)
+        textView.setOnClickListener {
+            onClick?.invoke(it)
+        }
     }
+
+    override var onClick: ((View?) -> Unit)?=null
 
     override fun getView(): View = this
 }

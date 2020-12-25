@@ -28,13 +28,15 @@
         </activity>
         <activity android:name=".ui.main.MainActivity" />
         <activity android:name=".ui.main.articlelist.ArticleListActivity" />
+        <activity android:name=".TestActivity" />
+        <activity android:name=".ui.main.webview.WebViewActivity" />
 
-<!--        <activity-->
-<!--            android:name="io.flutter.embedding.android.FlutterActivity"-->
-<!--            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"-->
-<!--            android:hardwareAccelerated="true"-->
-<!--            android:theme="@style/AppTheme"-->
-<!--            android:windowSoftInputMode="adjustResize" />-->
+        <activity
+            android:name="io.flutter.embedding.android.FlutterActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustResize" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -53,6 +53,7 @@ fun <T : BaseResult<*>> handleError(t: T?, viewModel: BaseViewModel, isShowError
     when (t?.errorCode) {
         205 -> {
             //token过期
+            viewModel.isTokenTimeout.value = true
         }
         else -> {
             val data = ErrorResult()

@@ -31,7 +31,12 @@ class DefaultLoadingView : RelativeLayout, ILoadView {
         val fp = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         fp.addRule(CENTER_IN_PARENT)
         addView(textView, fp)
+        textView.setOnClickListener {
+            onClick?.invoke(it)
+        }
     }
+
+    override var onClick: ((View?) -> Unit)?=null
 
     override fun startLoading() {
     }

@@ -10,6 +10,7 @@ import cn.lgh.openapp.databinding.ActivityArticleListBinding
 import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.main.articlelist.vm.ArticleListViewModel
 import cn.lgh.openapp.ui.main.home.adapter.ArticleAdapter
+import cn.lgh.openapp.ui.main.webview.WebViewActivity
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.ItemDecorationWidget
 import cn.lgh.openapp.widget.toast
@@ -50,8 +51,8 @@ class ArticleListActivity : BaseActivity<ArticleListViewModel, ActivityArticleLi
     }
 
     override fun initListener() {
-        mAdapter?.setOnItemChildClickListener { adapter, view, position ->
-            toast(articleList[position].title)
+        mAdapter?.setOnItemClickListener { adapter, view, position ->
+            WebViewActivity.start(this,articleList[position].link,articleList[position].title)
         }
 
         iv_back.setOnClickListener {

@@ -57,4 +57,18 @@ object URLConstants {
      * 页码：拼接在链接上，从0开始。
      */
     const val GET_ARTICLE_LIST_BY_ID="article/list/{page}/json"
+
+    /**
+     * 获取微信公众号tab
+     */
+    const val GET_ARTICLE_WX_LIST_URL="wxarticle/chapters/json"
+
+    /**
+     * 获取某个公众号的作品列表
+     * 参数：
+     * 公众号 ID：拼接在 url 中，eg:405
+     * 公众号页码：拼接在url 中，eg:1
+     */
+    const val GET_WX_ARTICLE_BY_ID="list/{id}/{page}/json"
+
 }

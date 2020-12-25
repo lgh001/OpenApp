@@ -5,14 +5,14 @@ import androidx.fragment.app.Fragment
 import cn.lgh.openapp.R
 import cn.lgh.openapp.databinding.ActivityMainBinding
 import cn.lgh.openapp.ui.base.BaseActivity
-import cn.lgh.openapp.ui.main.knowledgetree.KnowledgeTreeFragment
 import cn.lgh.openapp.ui.main.common.CommonFragment
 import cn.lgh.openapp.ui.main.home.HomeFragment
+import cn.lgh.openapp.ui.main.knowledgetree.KnowledgeTreeFragment
 import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.viewpager.BaseFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.DefautFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.FragmentInfo
-import kotlinx.android.synthetic.main.activity_main.*
+import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
@@ -79,22 +79,21 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         v.ivSearch.setOnClickListener {
 
         }
-//        findViewById<FlowingDrawer>(R.id.drawer_layout)
         //打开抽屉
         v.ivMenu.setOnClickListener {
-            if (!drawer_layout.isMenuVisible) {
-                drawer_layout.openMenu(true)
+            if (!v.drawerLayout.isMenuVisible) {
+                v.drawerLayout.openMenu(true)
             } else {
-                drawer_layout.closeMenu(true)
+                v.drawerLayout.closeMenu(true)
             }
         }
 
-//        v.avatar.setOnClickListener {
-//            startActivity(
-//                FlutterActivity.withCachedEngine("flutter_engine")
-//                    .build(this)
-//            )
-//        }
+        v.avatar.setOnClickListener {
+            startActivity(
+                FlutterActivity.withCachedEngine("flutter_engine")
+                    .build(this)
+            )
+        }
     }
 
     private fun showTab(index: Int) {
@@ -103,16 +102,14 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         v.viewpager.currentItem = index
     }
 
-    override fun initData(bundle: Bundle?) {
-    }
+    override fun initData(bundle: Bundle?) {}
 
-    override fun initVM() {
-    }
+    override fun initVM() {}
 
     private var lastClickTime = 0L
     override fun onBackPressed() {
-        if (drawer_layout.isMenuVisible) {
-            drawer_layout.closeMenu(true)
+        if (v.drawerLayout.isMenuVisible) {
+            v.drawerLayout.closeMenu(true)
             return
         }
 

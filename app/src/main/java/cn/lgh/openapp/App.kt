@@ -5,8 +5,12 @@ import android.content.Context
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.pagestate.*
 import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.embedding.engine.FlutterEngineCache
+import io.flutter.embedding.engine.dart.DartExecutor
 
 
 /**
@@ -20,7 +24,7 @@ class App : Application() {
         var DEBUG = true
     }
 
-//    lateinit var flutterEngine: FlutterEngine
+    lateinit var flutterEngine: FlutterEngine
 
     override fun onCreate() {
         super.onCreate()
@@ -30,6 +34,9 @@ class App : Application() {
             MaterialHeader(context).apply {
                 setColorSchemeColors(0xff5A88EA.toInt())
             }
+//            ClassicsHeader(context).apply {
+//                setAccentColor(0xff5A88EA.toInt())
+//            }
         }
         SmartRefreshLayout.setDefaultRefreshFooterCreator { context, layout ->
             ClassicsFooter(context).apply {
@@ -56,13 +63,13 @@ class App : Application() {
         }
 
 
-//        flutterEngine = FlutterEngine(this)
-//        flutterEngine.dartExecutor.executeDartEntrypoint(
-//            DartExecutor.DartEntrypoint.createDefault()
-//        )
-//
-//        FlutterEngineCache.getInstance()
-//            .put("flutter_engine", flutterEngine)
+        flutterEngine = FlutterEngine(this)
+        flutterEngine.dartExecutor.executeDartEntrypoint(
+            DartExecutor.DartEntrypoint.createDefault()
+        )
+
+        FlutterEngineCache.getInstance()
+            .put("flutter_engine", flutterEngine)
     }
 
 }
