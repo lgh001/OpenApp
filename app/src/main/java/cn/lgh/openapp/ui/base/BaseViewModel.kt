@@ -23,6 +23,8 @@ open class BaseViewModel : ViewModel() {
     val noMore = MutableLiveData<Boolean>()
     val isFirstPage = MutableLiveData<Boolean>()
     val loadSuccess = MutableLiveData<Boolean>()
+    val isTokenTimeout=MutableLiveData<Boolean>()
+    val isRefresh = MutableLiveData<Boolean>(false)
 
     fun showLoading() {
         isShowLoading.value = true
