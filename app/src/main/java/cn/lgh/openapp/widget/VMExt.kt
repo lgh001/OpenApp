@@ -37,6 +37,7 @@ suspend fun <T> BaseViewModel.request(
         }
         return res
     } catch (e: Exception) {
+        loadFinish()
         this.errorData.value = ErrorUtil.getError(e).also {
             it.show = isShowError
         }

@@ -17,10 +17,11 @@ class PageDelegate(
     var context: Context?,
     var mRefreshLayout: SmartRefreshLayout? = null,
     var mPageState: PageStateLayout,
-    var refresh:IRefresh,
+    var refresh: IRefresh,
     var vm: BaseViewModel
 ) : IProcess {
 
+    private var delay = 0
 
     override fun reset() {
         mRefreshLayout?.finishRefresh()
@@ -54,7 +55,7 @@ class PageDelegate(
         vm.noMore.observe(owner, Observer {
             if (it) {
                 noMore(vm.isFirstPage.value == true || vm.isRefresh.value == true)
-            }else{
+            } else {
                 reset()
             }
         })
@@ -64,6 +65,17 @@ class PageDelegate(
                 mPageState.setState(PageStateLayout.Status.NORMAL)
             }
         })
+
+        vm.requestRefresh.observe(owner, Observer {
+            if (it) {
+                if (refresh.hasRefresh()) mRefreshLayout?.autoRefresh(delay) else refresh.onRefresh()
+            }
+        })
+    }
+
+    override fun autoRefresh(delay: Int?) {
+        this.delay = delay ?: 0
+        vm.requestRefresh.value = true
     }
 
     override fun errorResult(errorResult: ErrorResult) {
@@ -71,9 +83,9 @@ class PageDelegate(
     }
 
     override fun showLoading() {
-        if (refresh.hasRefresh()){
+        if (refresh.hasRefresh()) {
             mPageState.setState(PageStateLayout.Status.LOADING)
-        }else{
+        } else {
             showWaitingDialog()
         }
     }
@@ -96,6 +108,6 @@ class PageDelegate(
         }
     }
 
-    private fun showWaitingDialog(){}
-    private fun hideWaitingDialog(){}
+    private fun showWaitingDialog() {}
+    private fun hideWaitingDialog() {}
 }

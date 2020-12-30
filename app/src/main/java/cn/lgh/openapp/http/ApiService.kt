@@ -37,10 +37,10 @@ interface ApiService {
     @GET(URLConstants.GET_ARTICLE_WX_LIST_URL)
     suspend fun getWXArticleList(): BaseResult<MutableList<WXAuthor>>
 
-    @GET(URLConstants.GET_ARTICLE_LIST_BY_ID)
+    @GET(URLConstants.GET_WX_ARTICLE_BY_ID)
     suspend fun getWXArticleListById(
         @Path("page") page: Int,
-        @Query("id") id: Int
+        @Path("id") id: Int
     ): BaseResult<WXArticleResult>
 
 }

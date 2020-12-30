@@ -10,20 +10,21 @@ import androidx.fragment.app.FragmentStatePagerAdapter
  * @date 2020/9/30
  *
  */
-abstract class BaseFragmentStatePagerAdapter(fm:FragmentManager) : FragmentStatePagerAdapter(fm,BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+abstract class BaseFragmentStatePagerAdapter(fm: FragmentManager) :
+    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-    var mList = mutableListOf<Fragment>()
+    var mList = mutableMapOf<Int, Fragment>()
 
     override fun getItem(position: Int): Fragment {
-        val item=onCreateItem(position)
-        mList.add(item)
+        val item = onCreateItem(position)
+        mList[position] = item
         return item
     }
 
-    abstract fun onCreateItem(position: Int):Fragment
+    abstract fun onCreateItem(position: Int): Fragment
 
-    fun getFragment(position: Int):Fragment?{
-        if (position>=mList.size){
+    fun getFragment(position: Int): Fragment? {
+        if (position >= mList.size) {
             return null
         }
         return mList[position]
@@ -31,6 +32,6 @@ abstract class BaseFragmentStatePagerAdapter(fm:FragmentManager) : FragmentState
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
         super.destroyItem(container, position, `object`)
-        mList.removeAt(position)
+        mList.remove(position)
     }
 }

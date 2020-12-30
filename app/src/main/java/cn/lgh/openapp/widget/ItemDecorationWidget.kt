@@ -73,7 +73,7 @@ class ItemDecorationWidget(
                 }
 
                 if (viewPosition == 0) {
-                    top = childView.top - params.topMargin - mSpaceVertical
+                    top = childView.top - params.topMargin - if (includeHeadFooter) 0 else mSpaceVertical
                     bottom = top + mSpaceVertical
                     mPaint?.let {
                         c.drawRect(

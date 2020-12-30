@@ -61,4 +61,12 @@ interface IProcess {
      * @param vm BaseViewModel
      */
     fun performVM(owner:LifecycleOwner,vm:BaseViewModel)
+
+    /**
+     * 自动刷新页面
+     * 当某个页面修改了数据，需要通知其他页面刷新数据的时候，就可以调用这个方法
+     * 使用了当回到当前页面的时候才会触发刷新，利用了liveData对页面的感知
+     * @param delay Int?
+     */
+    fun autoRefresh(delay:Int?=0)
 }

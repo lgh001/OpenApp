@@ -25,6 +25,7 @@ open class BaseViewModel : ViewModel() {
     val loadSuccess = MutableLiveData<Boolean>()
     val isTokenTimeout=MutableLiveData<Boolean>()
     val isRefresh = MutableLiveData<Boolean>(false)
+    val requestRefresh = MutableLiveData<Boolean>()
 
     fun showLoading() {
         isShowLoading.value = true

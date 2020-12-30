@@ -1,6 +1,7 @@
 package cn.lgh.openapp.ui.main.common
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.databinding.FragmentCommonBinding
@@ -34,8 +35,8 @@ class CommonFragment : BaseFragment<CommonViewModel, FragmentCommonBinding>() {
         v.tabLayout.setHasRoundCorner(true)
         v.tabLayout.setSelectedIndicatorWidth(Utils.getRealPixel(50))
 
-//        adapter = DefautFragmentStatePagerAdapter(fragmentManager!!, fragments)
-//        v.viewpager.adapter = adapter
+        adapter = DefautFragmentStatePagerAdapter(childFragmentManager, fragments)
+        v.viewpager.adapter = adapter
 
 //        v.tabLayout.setupWithViewPager(v.viewpager)
 //        setupPageState(v.viewpager)
@@ -54,10 +55,8 @@ class CommonFragment : BaseFragment<CommonViewModel, FragmentCommonBinding>() {
                 fragments.add(fragment)
                 v.tabLayout.addTab(v.tabLayout.newTab())
             }
-            adapter = DefautFragmentStatePagerAdapter(fragmentManager!!, fragments)
-            v.viewpager.adapter = adapter
-//            adapter?.notifyDataSetChanged()
-//            v.tabLayout.setupWithViewPager(v.viewpager)
+            adapter?.notifyDataSetChanged()
+            v.tabLayout.setupWithViewPager(v.viewpager)
 
             for (i in 0 until it.size) {
                 v.tabLayout.getTabAt(i)?.text = it[i].name

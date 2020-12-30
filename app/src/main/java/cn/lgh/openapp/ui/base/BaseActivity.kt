@@ -41,7 +41,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
      */
     private lateinit var mPageState: PageStateLayout
 
-    lateinit var delegate: PageDelegate
+    lateinit var delegate: IProcess
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,6 +151,10 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         vm.isRefresh.value = false
     }
 
+    override fun autoRefresh(delay: Int?) {
+        delegate.autoRefresh(delay)
+    }
+
     private fun setupRefreshLayout(view: View): View? {
         if (mRefreshLayout == null) {
             mRefreshLayout = SmartRefreshLayout(this)
@@ -195,8 +199,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
     @Subscribe
     open fun handleEvent(msg: EventMassage) {
         when (msg.code) {
-            EventCode.LOGIN_SUCCESS -> {
-            }
+            EventCode.LOGIN_SUCCESS -> { }
         }
     }
 

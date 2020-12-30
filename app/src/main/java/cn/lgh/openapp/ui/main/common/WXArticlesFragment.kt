@@ -1,6 +1,5 @@
 package cn.lgh.openapp.ui.main.common
 
-import android.graphics.Color
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.bean.WXArticleInfo
@@ -30,13 +29,13 @@ class WXArticlesFragment : BaseFragment<CommonViewModel, FragmentWxArticleBindin
     override fun initView() {
         v.recyclerView.layoutManager = LinearLayoutManager(context)
         v.recyclerView.addItemDecoration(
-            ItemDecorationWidget(0, Utils.getRealPixel(20), includeHeadFooter = false)
+            ItemDecorationWidget(0, Utils.getRealPixel(20), includeHeadFooter = true)
         )
 
         adapter = WXArticlesAdapter(context!!, articles)
         v.recyclerView.adapter = adapter
 
-//        setupPageState(v.recyclerView)
+        setupPageState(v.recyclerView)
     }
 
     override fun initListener() {
@@ -58,8 +57,8 @@ class WXArticlesFragment : BaseFragment<CommonViewModel, FragmentWxArticleBindin
             }
             val start = if (articles.size - 1 < 0) 0 else articles.size
             articles.addAll(it)
-//            adapter?.notifyItemRangeChanged(start, it.size)
-            v.recyclerView.adapter?.notifyDataSetChanged()
+            adapter?.notifyItemRangeChanged(start, it.size)
+//            v.recyclerView.adapter?.notifyDataSetChanged()
         })
     }
 
@@ -75,9 +74,9 @@ class WXArticlesFragment : BaseFragment<CommonViewModel, FragmentWxArticleBindin
 
     override fun lazyLoadData() {
         mId = arguments?.getInt(PARAM_KEY_ID) ?: 0
-        vm.getArticlesById(mId)
-//        mRefreshLayout?.autoRefresh(50)
+//        vm.getArticlesById(mId)
+        mRefreshLayout?.autoRefresh(50)
     }
 
-    override fun hasRefresh(): Boolean = false
+    override fun hasRefresh(): Boolean = true
 }

@@ -1,6 +1,7 @@
 package cn.lgh.openapp.http.intercept
 
 import android.util.Log
+import com.youth.banner.util.LogUtils
 import okhttp3.Interceptor
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
@@ -16,7 +17,7 @@ object InterceptorUtil{
     fun getLogInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
             override fun log(message: String) {
-                Log.i("http", "log: "+message)
+                //Log.i("http", "log: "+message)
             }
 
         }).setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -29,7 +30,7 @@ object InterceptorUtil{
                 val response=chain.proceed(request)
                 val buffer=response.body?.source()?.buffer?.copy()
                 val res=buffer.toString()
-                Log.i("http", "intercept: "+res)
+                LogUtils.i("api：${request.url} \n 响应：$res")
                 return response
             }
         }

@@ -69,6 +69,6 @@ object URLConstants {
      * 公众号 ID：拼接在 url 中，eg:405
      * 公众号页码：拼接在url 中，eg:1
      */
-    const val GET_WX_ARTICLE_BY_ID="list/{id}/{page}/json"
+    const val GET_WX_ARTICLE_BY_ID="wxarticle/list/{id}/{page}/json"
 
 }

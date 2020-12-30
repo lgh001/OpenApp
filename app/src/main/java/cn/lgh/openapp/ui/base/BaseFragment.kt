@@ -41,7 +41,7 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
     private lateinit var mPageState: PageStateLayout
 
     private var isViewCreated = false
-    lateinit var delegate: PageDelegate
+    lateinit var delegate: IProcess
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,12 +169,15 @@ abstract class BaseFragment<VM : BaseViewModel, VB : ViewBinding> : Fragment(), 
         vm.isRefresh.value = false
     }
 
+    override fun autoRefresh(delay: Int?) {
+        delegate.autoRefresh(delay)
+    }
+
     private fun setupRefreshLayout(view: View): View? {
         if (mRefreshLayout == null) {
             mRefreshLayout = SmartRefreshLayout(mContext)
         }
         return mRefreshLayout?.also {
-            it.setBackgroundColor(Color.RED)
             it.addView(
                 view,
                 ViewGroup.LayoutParams(
