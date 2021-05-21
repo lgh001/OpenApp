@@ -4,13 +4,10 @@ import android.app.Application
 import android.content.Context
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.pagestate.*
+import cn.lgh.openapp.widget.webview.WebViewTools
 import com.scwang.smart.refresh.footer.ClassicsFooter
-import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.embedding.engine.FlutterEngineCache
-import io.flutter.embedding.engine.dart.DartExecutor
 
 
 /**
@@ -24,11 +21,12 @@ class App : Application() {
         var DEBUG = true
     }
 
-    lateinit var flutterEngine: FlutterEngine
+//    lateinit var flutterEngine: FlutterEngine
 
     override fun onCreate() {
         super.onCreate()
         Utils.init(this)
+        WebViewTools.initialize(this)
 
         SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout ->
             MaterialHeader(context).apply {
@@ -63,13 +61,13 @@ class App : Application() {
         }
 
 
-        flutterEngine = FlutterEngine(this)
-        flutterEngine.dartExecutor.executeDartEntrypoint(
-            DartExecutor.DartEntrypoint.createDefault()
-        )
-
-        FlutterEngineCache.getInstance()
-            .put("flutter_engine", flutterEngine)
+//        flutterEngine = FlutterEngine(this)
+//        flutterEngine.dartExecutor.executeDartEntrypoint(
+//            DartExecutor.DartEntrypoint.createDefault()
+//        )
+//
+//        FlutterEngineCache.getInstance()
+//            .put("flutter_engine", flutterEngine)
     }
 
 }

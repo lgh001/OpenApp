@@ -12,7 +12,7 @@ import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.viewpager.BaseFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.DefautFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.FragmentInfo
-import io.flutter.embedding.android.FlutterActivity
+//import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 
@@ -89,10 +89,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
         }
 
         v.avatar.setOnClickListener {
-            startActivity(
-                FlutterActivity.withCachedEngine("flutter_engine")
-                    .build(this)
-            )
+//            startActivity(
+////                FlutterActivity.withCachedEngine("flutter_engine")
+////                    .build(this)
+//            )
         }
     }
 
