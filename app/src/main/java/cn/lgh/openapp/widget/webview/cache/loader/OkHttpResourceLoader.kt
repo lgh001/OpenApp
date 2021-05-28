@@ -2,12 +2,14 @@ package cn.lgh.openapp.widget.webview.cache.loader
 
 import cn.lgh.openapp.widget.webview.cache.offline.WebResource
 import cn.lgh.openapp.widget.webview.cache.okhttp.OkHttpClientProvider
+import cn.lgh.openapp.widget.webview.cache.utils.CacheLog
 import cn.lgh.openapp.widget.webview.cache.utils.HeaderUtils
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.*
+import kotlin.math.log
 
 /**
  * @author lgh
@@ -23,6 +25,7 @@ class OkHttpResourceLoader() : ResourceLoader {
 
     override fun getResource(request: SourceRequest?): WebResource? {
         val url = request?.url ?: return null
+        if (!url.startsWith("http") || !url.startsWith("https")) return null
         val httpClient = OkHttpClientProvider.get()
         //CacheControl?
         val userAgent = request?.userAgent ?: DEFAULT_USER_AGENT
@@ -42,13 +45,15 @@ class OkHttpResourceLoader() : ResourceLoader {
                 }
             }
         }
-        val httpRequest = requestBuilder
-            .url(url)
-            .get().build()
+
         var response: Response? = null
         try {
+            val httpRequest = requestBuilder
+                .url(url)
+                .get().build()
             val webResource = WebResource()
             response = httpClient.newCall(httpRequest).execute()
+            CacheLog.d("okhttp: ${response.code}   $url  ${response.headers["Content-Type"]}")
             if (isInterceptorThisRequest(response)) {
                 webResource.responseCode = response.code
                 webResource.reasonPhrase = response.message

@@ -1,5 +1,6 @@
 package cn.lgh.openapp.widget.webview.cache.offline
 
+import android.content.Context
 import android.webkit.WebResourceResponse
 import cn.lgh.openapp.widget.webview.cache.config.CacheConfig
 
@@ -8,7 +9,8 @@ import cn.lgh.openapp.widget.webview.cache.config.CacheConfig
  * @date 2021/5/21
  *
  */
-class OfflineServerImpl(val config: CacheConfig) : OfflineServer, Destroyable {
+class OfflineServerImpl(val context: Context, val config: CacheConfig) : OfflineServer,
+    Destroyable {
 
     private var mBaseInterceptorChain = mutableListOf<ResourceInterceptor>()
     private var mDefaultModeChain: List<ResourceInterceptor>? = null
@@ -21,6 +23,7 @@ class OfflineServerImpl(val config: CacheConfig) : OfflineServer, Destroyable {
             val list = mutableListOf<ResourceInterceptor>()
             list.addAll(mBaseInterceptorChain)
             list.add(MemoryCacheInterceptor(config))
+            list.add(ImageCacheInterceptor(context, config))
             list.add(DiskCacheInterceptor(config))
             list.add(ForceRemoteResourceInterceptor(config))
             mDefaultModeChain = list

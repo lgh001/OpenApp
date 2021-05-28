@@ -8,6 +8,7 @@ package cn.lgh.openapp.widget.webview.cache.config
 class DefaultMimeTypeFilter : MimeTypeFilter {
 
     private val mFilterMimeTypes = hashSetOf<String>()
+    private val mImageMimeTypes = hashSetOf<String>()
 
     init {
         // JavaScript
@@ -15,6 +16,7 @@ class DefaultMimeTypeFilter : MimeTypeFilter {
         addMimeType("application/ecmascript")
         addMimeType("application/x-ecmascript")
         addMimeType("application/x-javascript")
+        addMimeType("application/x-font-ttf")
         addMimeType("text/ecmascript")
         addMimeType("text/javascript")
         addMimeType("text/javascript1.0")
@@ -27,6 +29,7 @@ class DefaultMimeTypeFilter : MimeTypeFilter {
         addMimeType("text/livescript")
         addMimeType("text/x-ecmascript")
         addMimeType("text/x-javascript")
+        addMimeType("text/plain")
         // image
 //        addMimeType("image/gif")
 //        addMimeType("image/jpeg")
@@ -41,9 +44,21 @@ class DefaultMimeTypeFilter : MimeTypeFilter {
         addMimeType("text/css")
         // stream
         addMimeType("application/octet-stream")
+//        addMimeType("text/html")
+
+        mImageMimeTypes.add("image/gif")
+        mImageMimeTypes.add("image/jpeg")
+        mImageMimeTypes.add("image/png")
+        mImageMimeTypes.add("image/svg+xml")
+        mImageMimeTypes.add("image/bmp")
+        mImageMimeTypes.add("image/webp")
+        mImageMimeTypes.add("image/tiff")
+        mImageMimeTypes.add("image/vnd.microsoft.icon")
+        mImageMimeTypes.add("image/x-icon")
     }
 
     override fun isFilter(mimeType: String?): Boolean = !mFilterMimeTypes.contains(mimeType)
+    override fun isImageFilter(mimeType: String?): Boolean = mImageMimeTypes.contains(mimeType)
 
     override fun addMimeType(mimeType: String) {
         mFilterMimeTypes.add(mimeType)

@@ -18,7 +18,9 @@ class DefaultRemoteResourceInterceptor : ResourceInterceptor {
         val request = chain.request()
         val sourceRequest = SourceRequest(request, true)
         val resource = mOkhttpLoader.getResource(sourceRequest)
-        if (resource != null) return resource
+        if (resource != null) {
+            return resource
+        }
         return chain.process(request)
     }
 }

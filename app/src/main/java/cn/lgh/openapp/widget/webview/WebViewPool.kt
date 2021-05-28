@@ -5,42 +5,49 @@ import android.os.Build
 import android.util.Log
 import android.webkit.WebSettings
 import android.webkit.WebView
+import android.webkit.WebViewClient
+import cn.lgh.openapp.widget.webview.cache.IWebView
 
 /**
  * @author lgh
  * @date 2021/5/18
  *
  */
-class WebViewPool<K : String, V : WebView>(val context: Context) {
+class WebViewPool<K : String, V : IWebView>(
+    val context: Context,
+    preLoad: Array<String>? = arrayOf()
+) {
 
     companion object {
-        private const val DEFAULT_CACHE_COUNT = 3
+        private const val DEFAULT_CACHE_COUNT = 4
         private const val TAG = "WebViewPool"
-        private const val DEF_WEB_VIEW_URL = "about:blank"
+        const val DEF_WEB_VIEW_URL = "about:blank"
     }
 
     var size = 0
         private set
-    private var mLastNode: Node<K, V>? = null
+    private var mLastNode: Node<String, V>? = null
 
     init {
+        var size = if (preLoad?.size ?: 0 > 3) 3 else preLoad?.size ?: 0
         var i = 0
+        while (i < size) {
+            add(preLoad!![i], initWebView(context, preLoad[i]))
+            i++
+        }
         while (i < DEFAULT_CACHE_COUNT) {
-            add(DEF_WEB_VIEW_URL as K,initWebView(context))
+            add(DEF_WEB_VIEW_URL, initWebView(context, null))
             i++
         }
 
     }
 
-    private fun initWebView(context: Context): V {
-        println("webview")
-        val webView = WebView(context)
+    private fun initWebView(context: Context, url: String?): V {
+        val webView = WebViewImpl(context)
         val webSettings = webView.settings;
         webSettings.useWideViewPort = true; // 可任意比例缩放
         // 设置支持js
-        webSettings.setJavaScriptEnabled(true);
-        // 设置渲染优先级
-        webSettings.setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webSettings.setJavaScriptEnabled(true)
         // 设置可以访问文件
         webSettings.allowFileAccess = true;
         webSettings.allowFileAccessFromFileURLs = false;
@@ -48,19 +55,19 @@ class WebViewPool<K : String, V : WebView>(val context: Context) {
         webSettings.allowContentAccess = true;
         webSettings.displayZoomControls = true;
         //
-        webSettings.cacheMode = WebSettings.LOAD_DEFAULT;
-        webSettings.setAppCacheEnabled(true);
+        webSettings.cacheMode = WebSettings.LOAD_DEFAULT
+//        webSettings.setAppCacheEnabled(true)
         // 开启数据库形式存储
-        webSettings.databaseEnabled = true;
+        webSettings.databaseEnabled = true
         // 开启DOM形式存储
-        webSettings.domStorageEnabled = true;
+        webSettings.domStorageEnabled = true
         // 支持自动加载图片
-        webSettings.loadsImagesAutomatically = true;
+        webSettings.loadsImagesAutomatically = true
         // 特别注意：5.1以上默认禁止了https和http混用，以下方式是开启
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
         }
-        webView.loadUrl(DEF_WEB_VIEW_URL)
+        webView.loadUrl(url ?: DEF_WEB_VIEW_URL)
         return webView as V
     }
 
@@ -69,7 +76,7 @@ class WebViewPool<K : String, V : WebView>(val context: Context) {
      * @param key K
      * @param value V
      */
-    private fun add(key: K, value: V) {
+    private fun add(key: String, value: V) {
         val newNode = Node(key, value, mLastNode, null)
         if (mLastNode != null) {
             mLastNode?.next = newNode
@@ -131,21 +138,48 @@ class WebViewPool<K : String, V : WebView>(val context: Context) {
      * @param key K
      * @return V
      */
-    fun get(key: K?): V? {
+    fun get(key: String?): V? {
         if (mLastNode == null) return null
         var current = mLastNode
+        var hit = false
         while (true) {
             val prev = current?.prev
             if (prev == null) {
                 changeNodeToLast(current)
                 current?.key = key
-                return current?.value
+                current?.value?.hit = false
+                break
             } else if (current?.key == key) {
                 changeNodeToLast(current)
-                return current?.value
+                current?.value?.hit = true
+                hit = true
+                break
             } else {
                 current = prev
             }
+        }
+        //如果未命中，需要将头结点变成空，保证池里永远有一个空的webview
+        if (!hit) {
+            letHeadEmpty()
+        }
+        return current?.value
+    }
+
+    /**
+     * 让头结点变为空
+     */
+    private fun letHeadEmpty() {
+        if (mLastNode == null) return
+        var cur = mLastNode
+        while (cur?.prev != null) {
+            cur = cur.prev
+        }
+        var head = cur
+        if (head?.key != DEF_WEB_VIEW_URL) {
+            head?.key = DEF_WEB_VIEW_URL as String
+            head?.value?.get()?.webViewClient = WebViewClient()
+            head?.value?.get()?.webChromeClient = null
+            head?.value?.get()?.loadUrl(DEF_WEB_VIEW_URL)
         }
     }
 
@@ -153,7 +187,7 @@ class WebViewPool<K : String, V : WebView>(val context: Context) {
      * 将节点移动到末尾
      * @param target Node<K, V> 需要移动到末尾的节点
      */
-    private fun changeNodeToLast(target: Node<K, V>?) {
+    private fun changeNodeToLast(target: Node<String, V>?) {
         //如果是末尾节点，不需要移动
         val next = target?.next ?: return
 

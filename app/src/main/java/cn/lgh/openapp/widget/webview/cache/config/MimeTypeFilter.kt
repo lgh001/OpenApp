@@ -8,6 +8,7 @@ package cn.lgh.openapp.widget.webview.cache.config
 interface MimeTypeFilter {
 
     fun isFilter(mimeType:String?):Boolean
+    fun isImageFilter(mimeType: String?):Boolean
     fun addMimeType(mimeType: String)
     fun removeMimeType(mimeType: String)
     fun clear()

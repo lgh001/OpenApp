@@ -6,21 +6,24 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
+import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
+import android.widget.LinearLayout
 import cn.lgh.openapp.databinding.ActivityWebViewBinding
 import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.base.BaseViewModel
 import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.webview.WebViewTools
+import cn.lgh.openapp.widget.webview.cache.WebViewClientDelegate
 import cn.lgh.openapp.widget.webview.cache.config.CacheConfig
 import cn.lgh.openapp.widget.webview.cache.offline.CacheRequest
 import cn.lgh.openapp.widget.webview.cache.offline.OfflineServer
 import cn.lgh.openapp.widget.webview.cache.offline.OfflineServerImpl
-import com.just.agentweb.PermissionInterceptor
-import com.just.agentweb.WebViewClient
-import com.just.agentweb.WebChromeClient
+import cn.lgh.openapp.widget.webview.cache.utils.MimeTypeMapUtils
+import com.google.gson.Gson
+import com.just.agentweb.*
 
 /**
  * @author lgh
@@ -49,11 +52,11 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
         }
     }
 
-//    private var mWebView: AgentWeb.PreAgentWeb? = null
-    private var mWebView:WebView?=null
+        private var mWebView: AgentWeb.PreAgentWeb? = null
+    private var webView: WebView? = null
     private var mUrl: String? = null
     private var mTitle: String? = null
-    private var offlineServer:OfflineServer?=null
+    private var mWebViewClientDelegate: WebViewClientDelegate? = null
 
     override fun initView() {
 //        mWebView = AgentWeb.with(this)
@@ -71,9 +74,6 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
 //        mWebView?.get()?.let {
 //            it.jsInterfaceHolder?.addJavaObject("android",AndroidInterface(it,this))
 //        }
-        val config=CacheConfig.Builder()
-            .build()
-        offlineServer=OfflineServerImpl(config)
     }
 
     override fun initListener() {
@@ -91,52 +91,85 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
             return
         }
 //        mWebView?.go(mUrl)
-        mWebView=WebViewTools.instance.get(mUrl)
-        println("是否为空：${mWebView==null}")
-        mWebView?.loadUrl(mUrl!!)
+        webView = WebViewTools.instance.get(mUrl)?.get()
+        val webSettings = webView!!.settings
+        webSettings.setJavaScriptEnabled(true)
+        webSettings.domStorageEnabled = true
+        webSettings.allowFileAccess = true
+        webSettings.useWideViewPort = true
+        webSettings.loadWithOverviewMode = true
+        webSettings.setSupportZoom(false)
+        webSettings.builtInZoomControls = false
+        webSettings.displayZoomControls = false
+        webSettings.defaultTextEncodingName = "UTF-8"
+        webSettings.blockNetworkImage = true
+        webView?.addJavascriptInterface(this, "android")
         initWebView()
         v.tvTitle.text = mTitle
     }
 
-    private fun initWebView(){
-        mWebView?.apply {
-            webChromeClient=mWebChromeClient
-            webViewClient=mWebViewClient
+    private fun initWebView() {
+        mWebViewClientDelegate = WebViewClientDelegate(webView!!, mWebViewClient)
+        webView?.apply {
+            webChromeClient = mWebChromeClient
+            webViewClient = mWebViewClientDelegate!!
         }
-        mWebView?.let {
+        webView?.let {
             v.root.addView(it)
         }
+        webView?.loadUrl(mUrl!!)
+        time = System.currentTimeMillis()
     }
+
+    private var time = 0L
+    private var time1 = 0L
 
     override fun initVM() {}
 
+    @JavascriptInterface
+    fun sendResource(timing: String?) {
+        val performance: Performance = Gson().fromJson(timing, Performance::class.java)
+        Log.v(
+            "WebViewActivity",
+            "request cost time: " + (performance.responseEnd - performance.requestStart).toString() + "ms"
+        )
+        Log.v(
+            "WebViewActivity",
+            "dom build time: " + (performance.domComplete - performance.domInteractive).toString() + "ms."
+        )
+        Log.v(
+            "WebViewActivity",
+            "dom ready time: " + (performance.domContentLoadedEventEnd - performance.navigationStart).toString() + "ms."
+        )
+        Log.v(
+            "WebViewActivity",
+            "load time: " + (performance.loadEventEnd - performance.navigationStart).toString() + "ms."
+        )
+    }
 
-    private val mWebViewClient=object : WebViewClient() {
+    private val mWebViewClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
+            time1 = System.currentTimeMillis()
+            println("onPageStarted：$url")
         }
 
-        override fun shouldInterceptRequest(
-            view: WebView?,
-            request: WebResourceRequest?
-        ): WebResourceResponse? {
-            val cacheRequest= CacheRequest()
-//            cacheRequest.url=request.url
-            val res=offlineServer?.get(cacheRequest)
-            if (res!=null){
-                return res
-            }
-            return super.shouldInterceptRequest(view, request)
+        override fun onPageFinished(view: WebView?, url: String?) {
+            super.onPageFinished(view, url)
+            view!!.settings.blockNetworkImage = false
+            view?.loadUrl("javascript:android.sendResource(JSON.stringify(window.performance.timing))")
+            println("start: ${time1 - time}")
+            println("load: ${System.currentTimeMillis() - time1}")
         }
     }
 
-    private val mWebChromeClient=object :WebChromeClient(){
+    private val mWebChromeClient = object : WebChromeClient() {
         override fun onProgressChanged(view: WebView?, newProgress: Int) {
             super.onProgressChanged(view, newProgress)
         }
     }
 
-    private val mPermissionInterceptor=
+    private val mPermissionInterceptor =
         PermissionInterceptor { url, permissions, action ->
             Log.i("WebView", "url: $url   permissions: $permissions    action: $action")
             false
@@ -150,14 +183,14 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
     }
 
     override fun onResume() {
-//        mWebView?.get()?.webLifeCycle?.onResume()
-        mWebView?.onResume()
+        mWebView?.get()?.webLifeCycle?.onResume()
+        webView?.onResume()
         super.onResume()
     }
 
     override fun onPause() {
-//        mWebView?.get()?.webLifeCycle?.onPause()
-        mWebView?.onPause()
+        mWebView?.get()?.webLifeCycle?.onPause()
+        webView?.onPause()
         super.onPause()
     }
 
@@ -170,7 +203,7 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
 
     override fun onDestroy() {
 //        mWebView?.get()?.webLifeCycle?.onDestroy()
-        WebViewTools.instance.remove(v.root,mWebView)
+        WebViewTools.instance.remove(v.root, webView)
         super.onDestroy()
     }
 }

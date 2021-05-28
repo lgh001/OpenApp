@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.view.ViewGroup
 import android.webkit.WebView
+import cn.lgh.openapp.widget.webview.cache.IWebView
 
 /**
  * @author lgh
@@ -21,31 +22,31 @@ class WebViewTools private constructor() {
         private const val ACTION_START_WEB = "spt.webview.web.start.action"
         private const val ACTION_STOP_WEB = "spt.webview.web.stop.action"
 
-        fun initialize(context: Context) {
+        fun initialize(context: Context, preLoad: Array<String>? = arrayOf()) {
             val processName = ProcessUtils.getAppProcess(context)
             println("进程名：$processName")
             if ("cn.lgh.openapp:web" == processName) {
-                instance.init(context)
+                instance.init(context, preLoad)
             } else {
                 instance.startProcess(context)
             }
         }
     }
 
-    private var mPool: WebViewPool<String, WebView>? = null
+    private var mPool: WebViewPool<String, IWebView>? = null
 
-    fun init(context: Context) {
+    fun init(context: Context, preLoad: Array<String>? = arrayOf()) {
         println("初始化")
-        mPool = WebViewPool(context)
+        mPool = WebViewPool(context, preLoad)
     }
 
     fun startProcess(context: Context) {
-        val intent = Intent(context,WebStartService::class.java)
+        val intent = Intent(context, WebStartService::class.java)
         context.startService(intent)
     }
 
     fun stopProcess(context: Context) {
-        val intent = Intent(context,WebStartService::class.java)
+        val intent = Intent(context, WebStartService::class.java)
         context.startService(intent)
     }
 
@@ -55,7 +56,7 @@ class WebViewTools private constructor() {
      * @param url String
      * @return WebView?
      */
-    fun get(url: String?): WebView? {
+    fun get(url: String?): IWebView? {
         return mPool?.get(url)
     }
 

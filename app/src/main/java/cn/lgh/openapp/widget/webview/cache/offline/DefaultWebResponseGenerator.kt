@@ -50,8 +50,8 @@ class DefaultWebResponseGenerator : WebResourceResponseGenerator {
         }
         val bis = resource.originBytes?.inputStream()
         val status = resource.responseCode
-        val reasonPhrase = resource.reasonPhrase ?: PhraseList.getPhrase(status)
-        return WebResourceResponse(mime, charset, status, reasonPhrase, headers, bis)
+        val reasonPhrase = if(resource.reasonPhrase.isNullOrEmpty()) PhraseList.getPhrase(status) else resource.reasonPhrase
+        return WebResourceResponse(mime, charset, status, reasonPhrase?:PhraseList.getPhrase(status), headers, bis)
     }
 
     private fun getContentType(

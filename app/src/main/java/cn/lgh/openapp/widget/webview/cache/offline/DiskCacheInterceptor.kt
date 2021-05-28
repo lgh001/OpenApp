@@ -165,7 +165,8 @@ class DiskCacheInterceptor(val config: CacheConfig) : ResourceInterceptor, Destr
                 }
             }
         }
-        return contentType != null && config.mimeTypeFilter?.isFilter(contentType) == false
+        val code=resource.responseCode
+        return contentType != null && config.mimeTypeFilter?.isFilter(contentType) == false && code in 200..299
     }
 
     override fun destroy() {
