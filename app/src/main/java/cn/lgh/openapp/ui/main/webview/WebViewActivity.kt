@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.webkit.JavascriptInterface
-import android.webkit.WebResourceRequest
-import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.widget.LinearLayout
 import cn.lgh.openapp.databinding.ActivityWebViewBinding
@@ -17,13 +15,11 @@ import cn.lgh.openapp.ui.base.BaseViewModel
 import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.webview.WebViewTools
 import cn.lgh.openapp.widget.webview.cache.WebViewClientDelegate
-import cn.lgh.openapp.widget.webview.cache.config.CacheConfig
-import cn.lgh.openapp.widget.webview.cache.offline.CacheRequest
-import cn.lgh.openapp.widget.webview.cache.offline.OfflineServer
-import cn.lgh.openapp.widget.webview.cache.offline.OfflineServerImpl
-import cn.lgh.openapp.widget.webview.cache.utils.MimeTypeMapUtils
 import com.google.gson.Gson
-import com.just.agentweb.*
+import com.just.agentweb.AgentWeb
+import com.just.agentweb.PermissionInterceptor
+import com.just.agentweb.WebChromeClient
+import com.just.agentweb.WebViewClient
 
 /**
  * @author lgh
@@ -59,14 +55,14 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
     private var mWebViewClientDelegate: WebViewClientDelegate? = null
 
     override fun initView() {
-//        mWebView = AgentWeb.with(this)
-//            .setAgentWebParent(v.root, LinearLayout.LayoutParams(-1, -1))
-//            .useDefaultIndicator()
-//            .setWebChromeClient(mWebChromeClient)
-//            .setWebViewClient(mWebViewClient)
-//            .setPermissionInterceptor(mPermissionInterceptor)
-//            .createAgentWeb()
-//            .ready()
+        mWebView = AgentWeb.with(this)
+            .setAgentWebParent(v.root, LinearLayout.LayoutParams(-1, -1))
+            .useDefaultIndicator()
+            .setWebChromeClient(mWebChromeClient)
+            .setWebViewClient(mWebViewClient)
+            .setPermissionInterceptor(mPermissionInterceptor)
+            .createAgentWeb()
+            .ready()
 
         //android 调用js
 //        mWebView?.get()?.jsAccessEntrace.quickCallJs("callByAndroid")
@@ -90,21 +86,21 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
             finish()
             return
         }
-//        mWebView?.go(mUrl)
-        webView = WebViewTools.instance.get(mUrl)?.get()
-        val webSettings = webView!!.settings
-        webSettings.setJavaScriptEnabled(true)
-        webSettings.domStorageEnabled = true
-        webSettings.allowFileAccess = true
-        webSettings.useWideViewPort = true
-        webSettings.loadWithOverviewMode = true
-        webSettings.setSupportZoom(false)
-        webSettings.builtInZoomControls = false
-        webSettings.displayZoomControls = false
-        webSettings.defaultTextEncodingName = "UTF-8"
-        webSettings.blockNetworkImage = true
-        webView?.addJavascriptInterface(this, "android")
-        initWebView()
+        mWebView?.go(mUrl)
+//        webView = WebViewTools.instance.get(mUrl)?.get()
+//        val webSettings = webView!!.settings
+//        webSettings.setJavaScriptEnabled(true)
+//        webSettings.domStorageEnabled = true
+//        webSettings.allowFileAccess = true
+//        webSettings.useWideViewPort = true
+//        webSettings.loadWithOverviewMode = true
+//        webSettings.setSupportZoom(false)
+//        webSettings.builtInZoomControls = false
+//        webSettings.displayZoomControls = false
+//        webSettings.defaultTextEncodingName = "UTF-8"
+//        webSettings.blockNetworkImage = true
+//        webView?.addJavascriptInterface(this, "android")
+//        initWebView()
         v.tvTitle.text = mTitle
     }
 
@@ -150,16 +146,16 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
     private val mWebViewClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
-            time1 = System.currentTimeMillis()
-            println("onPageStarted：$url")
+//            time1 = System.currentTimeMillis()
+//            println("onPageStarted：$url")
         }
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
-            view!!.settings.blockNetworkImage = false
-            view?.loadUrl("javascript:android.sendResource(JSON.stringify(window.performance.timing))")
-            println("start: ${time1 - time}")
-            println("load: ${System.currentTimeMillis() - time1}")
+//            view!!.settings.blockNetworkImage = false
+//            view?.loadUrl("javascript:android.sendResource(JSON.stringify(window.performance.timing))")
+//            println("start: ${time1 - time}")
+//            println("load: ${System.currentTimeMillis() - time1}")
         }
     }
 
@@ -176,34 +172,34 @@ class WebViewActivity : BaseActivity<BaseViewModel, ActivityWebViewBinding>() {
         }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//        if (mWebView?.get()?.handleKeyEvent(keyCode,event) == true){
-//            return true
-//        }
+        if (mWebView?.get()?.handleKeyEvent(keyCode,event) == true){
+            return true
+        }
         return super.onKeyDown(keyCode, event)
     }
 
     override fun onResume() {
         mWebView?.get()?.webLifeCycle?.onResume()
-        webView?.onResume()
+//        webView?.onResume()
         super.onResume()
     }
 
     override fun onPause() {
         mWebView?.get()?.webLifeCycle?.onPause()
-        webView?.onPause()
+//        webView?.onPause()
         super.onPause()
     }
 
     override fun onBackPressed() {
-//        if (mWebView?.get()?.back()==false){
-//            super.onBackPressed()
-//        }
+        if (mWebView?.get()?.back()==false){
+            super.onBackPressed()
+        }
         super.onBackPressed()
     }
 
     override fun onDestroy() {
-//        mWebView?.get()?.webLifeCycle?.onDestroy()
-        WebViewTools.instance.remove(v.root, webView)
+        mWebView?.get()?.webLifeCycle?.onDestroy()
+//        WebViewTools.instance.remove(v.root, webView)
         super.onDestroy()
     }
 }

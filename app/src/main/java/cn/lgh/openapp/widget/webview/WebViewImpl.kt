@@ -20,6 +20,7 @@ class WebViewImpl : WebView, IWebView {
     )
 
     override var hit: Boolean = false
+    override var key: String =""
 
     override fun get(): WebView = this
 

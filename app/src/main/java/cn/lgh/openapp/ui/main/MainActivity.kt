@@ -1,6 +1,7 @@
 package cn.lgh.openapp.ui.main
 
 import android.os.Bundle
+import android.os.Environment
 import androidx.fragment.app.Fragment
 import cn.lgh.openapp.R
 import cn.lgh.openapp.databinding.ActivityMainBinding
@@ -8,10 +9,16 @@ import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.main.common.CommonFragment
 import cn.lgh.openapp.ui.main.home.HomeFragment
 import cn.lgh.openapp.ui.main.knowledgetree.KnowledgeTreeFragment
+import cn.lgh.openapp.utils.PermissionUtil
+import cn.lgh.openapp.widget.expand
 import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.viewpager.BaseFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.DefautFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.FragmentInfo
+import java.io.File
+import java.io.FileOutputStream
+import java.security.Permission
+
 //import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
@@ -74,10 +81,20 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             }
             false
         }
-
+        val name=this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath+"/xxx.txt"
         //搜索
+        v.ivSearch.expand(100,100)
         v.ivSearch.setOnClickListener {
-
+            println("保存文件:$name")
+            PermissionUtil.addPermission(mContext, arrayOf(com.yanzhenjie.permission.runtime.Permission.WRITE_EXTERNAL_STORAGE),
+            granted = {
+                val file=File(name)
+                val fos=FileOutputStream(file)
+                fos.write("哈哈哈啊哈哈".toByteArray())
+                fos.flush()
+                fos.close()
+                println("保存成功：${file.name}")
+            })
         }
         //打开抽屉
         v.ivMenu.setOnClickListener {

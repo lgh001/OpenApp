@@ -101,6 +101,7 @@ class WebViewClientDelegate(
     }
 
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+        println("onPageStarted11: $url")
         if (delegate != null) {
             delegate.onPageStarted(view, url, favicon)
             return
@@ -109,6 +110,7 @@ class WebViewClientDelegate(
     }
 
     override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
+        println("shouldOverrideUrlLoading   $url")
         if (delegate != null) {
             return delegate.shouldOverrideUrlLoading(view, url)
         }
@@ -117,6 +119,7 @@ class WebViewClientDelegate(
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        println("shouldOverrideUrlLoading11  ${request?.url}")
         if (delegate != null) {
             return delegate.shouldOverrideUrlLoading(view, request)
         }

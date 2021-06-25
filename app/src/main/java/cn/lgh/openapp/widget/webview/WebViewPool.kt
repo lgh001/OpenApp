@@ -1,12 +1,14 @@
 package cn.lgh.openapp.widget.webview
 
 import android.content.Context
+import android.content.MutableContextWrapper
 import android.os.Build
 import android.util.Log
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import cn.lgh.openapp.widget.webview.cache.IWebView
+import cn.lgh.openapp.widget.webview.cache.WebViewClientDelegate
 
 /**
  * @author lgh
@@ -19,9 +21,9 @@ class WebViewPool<K : String, V : IWebView>(
 ) {
 
     companion object {
-        private const val DEFAULT_CACHE_COUNT = 4
+        private const val DEFAULT_CACHE_COUNT = 3
         private const val TAG = "WebViewPool"
-        const val DEF_WEB_VIEW_URL = "about:blank"
+        const val DEF_WEB_VIEW_URL = "javascript:!function(){}"
     }
 
     var size = 0
@@ -29,21 +31,22 @@ class WebViewPool<K : String, V : IWebView>(
     private var mLastNode: Node<String, V>? = null
 
     init {
-        var size = if (preLoad?.size ?: 0 > 3) 3 else preLoad?.size ?: 0
+        var size = preLoad?.size ?: 0
+        size = if (size > DEFAULT_CACHE_COUNT - 1) DEFAULT_CACHE_COUNT - 1 else size
         var i = 0
         while (i < size) {
-            add(preLoad!![i], initWebView(context, preLoad[i]))
+            add(preLoad?.get(i) ?: DEF_WEB_VIEW_URL, initWebView(context, preLoad?.get(i)))
             i++
         }
         while (i < DEFAULT_CACHE_COUNT) {
-            add(DEF_WEB_VIEW_URL, initWebView(context, null))
+            add(DEF_WEB_VIEW_URL, initWebView(context))
             i++
         }
-
     }
 
-    private fun initWebView(context: Context, url: String?): V {
-        val webView = WebViewImpl(context)
+    private fun initWebView(context: Context, url: String?=DEF_WEB_VIEW_URL): V {
+        val contextWrapper=MutableContextWrapper(context)
+        val webView = WebViewImpl(contextWrapper)
         val webSettings = webView.settings;
         webSettings.useWideViewPort = true; // 可任意比例缩放
         // 设置支持js
@@ -67,6 +70,8 @@ class WebViewPool<K : String, V : IWebView>(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webSettings.mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW;
         }
+        webView.webViewClient=WebViewClientDelegate(webView, null)
+        webView.key=url ?: DEF_WEB_VIEW_URL
         webView.loadUrl(url ?: DEF_WEB_VIEW_URL)
         return webView as V
     }
@@ -144,27 +149,32 @@ class WebViewPool<K : String, V : IWebView>(
         var hit = false
         while (true) {
             val prev = current?.prev
-            if (prev == null) {
+            if (current?.key == key) {
                 changeNodeToLast(current)
-                current?.key = key
-                current?.value?.hit = false
-                break
-            } else if (current?.key == key) {
-                changeNodeToLast(current)
+                takeOffLast()
                 current?.value?.hit = true
                 hit = true
+                break
+            }else if (prev == null) {
+                changeNodeToLast(current)
+                takeOffLast()
+                current?.key = key
+                current?.value?.hit = false
                 break
             } else {
                 current = prev
             }
         }
         //如果未命中，需要将头结点变成空，保证池里永远有一个空的webview
-        if (!hit) {
-            letHeadEmpty()
-        }
+//        if (!hit) {
+//            letHeadEmpty()
+//        }
         return current?.value
     }
 
+    /**
+     * 让头结点变为空
+     */
     /**
      * 让头结点变为空
      */
@@ -180,7 +190,29 @@ class WebViewPool<K : String, V : IWebView>(
             head?.value?.get()?.webViewClient = WebViewClient()
             head?.value?.get()?.webChromeClient = null
             head?.value?.get()?.loadUrl(DEF_WEB_VIEW_URL)
+//            head?.value?.key = DEF_WEB_VIEW_URL
         }
+    }
+
+    /**
+     * 释放并且放到池中
+     * @param view V?
+     */
+    fun release(view: V?) {
+        view?.let {
+            add(view?.key ?: DEF_WEB_VIEW_URL, it)
+        }
+    }
+
+    /**
+     * 断开某个节点
+     * @param target Node<String, V>?
+     */
+    private fun takeOffLast(){
+        //当前节点前后都为空，那么说明池只有一个数据，拿走就没有了
+        size--
+        val prev = mLastNode?.prev
+        mLastNode=prev
     }
 
     /**

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import cn.lgh.openapp.R
 import cn.lgh.openapp.ui.main.MainActivity
 import cn.lgh.openapp.databinding.ActivitySplashBinding
 import cn.lgh.openapp.ui.base.BaseActivity
@@ -13,6 +14,7 @@ import cn.lgh.openapp.utils.StatusBarUtil
 import cn.lgh.openapp.widget.toast
 import com.gyf.immersionbar.ImmersionBar
 import com.yanzhenjie.permission.runtime.Permission
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 /**
  * @author lgh
@@ -43,6 +45,8 @@ class SplashActivity : BaseActivity<BaseViewModel, ActivitySplashBinding>() {
 
             })
 
+        v.flyView.setText("Believe In Technology")
+        v.flyView.setTextColor(resources.getColor(R.color.app_main_color))
     }
 
     private fun init() {

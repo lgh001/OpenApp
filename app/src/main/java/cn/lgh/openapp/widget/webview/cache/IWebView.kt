@@ -10,6 +10,7 @@ import android.webkit.WebView
 interface IWebView {
 
     var hit:Boolean
+    var key:String
     fun get(): WebView
     fun isHit(): Boolean
 }

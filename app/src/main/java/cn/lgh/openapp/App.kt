@@ -26,7 +26,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Utils.init(this)
-        WebViewTools.initialize(this)
 
         SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout ->
             MaterialHeader(context).apply {

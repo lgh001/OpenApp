@@ -2,8 +2,10 @@ package cn.lgh.openapp.widget.webview
 
 import android.content.Context
 import android.content.Intent
+import android.content.MutableContextWrapper
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import cn.lgh.openapp.widget.webview.cache.IWebView
 
 /**
@@ -24,8 +26,9 @@ class WebViewTools private constructor() {
 
         fun initialize(context: Context, preLoad: Array<String>? = arrayOf()) {
             val processName = ProcessUtils.getAppProcess(context)
-            println("进程名：$processName")
-            if ("cn.lgh.openapp:web" == processName) {
+            val packageName=context.applicationInfo.packageName
+            println("进程名：$processName  $packageName")
+            if ("${packageName}:web" == processName) {
                 instance.init(context, preLoad)
             } else {
                 instance.startProcess(context)
@@ -47,7 +50,7 @@ class WebViewTools private constructor() {
 
     fun stopProcess(context: Context) {
         val intent = Intent(context, WebStartService::class.java)
-        context.startService(intent)
+        context.stopService(intent)
     }
 
     /**
@@ -56,22 +59,41 @@ class WebViewTools private constructor() {
      * @param url String
      * @return WebView?
      */
-    fun get(url: String?): IWebView? {
-        return mPool?.get(url)
+    fun get(context: Context, url: String?): IWebView? {
+        val view=mPool?.get(url)
+        if (view?.get() != null) {
+            val contextWrapper = view?.get().context as MutableContextWrapper
+            contextWrapper.baseContext = context
+        }
+        return view
     }
 
-    fun remove(webView: WebView?) {
-        val viewGroup = webView?.parent as ViewGroup
-        viewGroup?.removeView(webView)
-        webView?.removeAllViews()
-        webView?.webChromeClient = null
-//        webView.webViewClient = null
+    fun release(webView: IWebView?) {
+        if (webView?.get() == null) return
+        val contextWrapper = webView?.get().context as MutableContextWrapper
+        contextWrapper.baseContext = contextWrapper.applicationContext
+        remove(webView)
+//        if (webView.isRelease) {
+//            mPool?.addDefault()
+//        } else {
+//            mPool?.release(webView)
+//        }
+        mPool?.release(webView)
+    }
+
+    fun remove(webView: IWebView?) {
+        val viewGroup = webView?.get()?.parent as ViewGroup
+        viewGroup?.removeView(webView.get())
+        webView.get()?.removeAllViews()
+        webView.get()?.webChromeClient = null
+//        webView?.get().webChromeClient = null
     }
 
     fun remove(viewGroup: ViewGroup, webView: WebView?) {
         viewGroup.removeView(webView)
         webView?.removeAllViews()
         webView?.webChromeClient = null
+        webView?.webViewClient= WebViewClient()
     }
 
 }
