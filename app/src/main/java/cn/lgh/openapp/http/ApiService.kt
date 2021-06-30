@@ -2,9 +2,7 @@ package cn.lgh.openapp.http
 
 import cn.lgh.openapp.bean.*
 import kotlinx.coroutines.Deferred
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 /**
  * @author lgh
@@ -43,4 +41,10 @@ interface ApiService {
         @Path("id") id: Int
     ): BaseResult<WXArticleResult>
 
+    @FormUrlEncoded
+    @POST(URLConstants.SEARCH_BY_KEY)
+    suspend fun search(
+        @FieldMap params: Map<String, String?>,
+        @Path("page") page: Int
+    ): BaseResult<Article>
 }

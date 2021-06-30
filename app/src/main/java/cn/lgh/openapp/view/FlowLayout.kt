@@ -3,25 +3,64 @@ package cn.lgh.openapp.view
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import cn.lgh.openapp.R
 
 /**
  * @author lgh
  * @date 2020/10/10
  * 流布局
  */
-class FlowLayout : ViewGroup {
+class FlowLayout @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+) : ViewGroup(context, attrs, defStyleAttr) {
 
-    constructor(context: Context) : this(context, null)
+    var horizontalSpacing: Float
+    var verticalSpacing: Float
 
-    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    init {
+        val a = context.obtainStyledAttributes(attrs, R.styleable.FlowLayout)
+        horizontalSpacing = a.getDimension(R.styleable.FlowLayout_horizontalSpacing, 0f)
+        verticalSpacing = a.getDimension(R.styleable.FlowLayout_verticalSpacing, 0f)
+        a.recycle()
+    }
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleRes: Int = 0) : super(
-        context,
-        attrs,
-        defStyleRes
-    )
+    private var adapter: BaseFlowAdapter? = null
+
+    fun setAdapter(adapter: BaseFlowAdapter?) {
+        this.adapter = adapter
+        adapter?.registerObserver {
+            removeAllViews()
+            addAll(this.adapter)
+        }
+        addAll(adapter)
+    }
+
+    private fun addAll(adapter: BaseFlowAdapter?) {
+        adapter?.let {
+            for (i in 0 until it.getCount()) {
+                addView(
+                    it.getView(i),
+                    MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                        if (i == 0) {
+                            marginStart = 0
+                            marginEnd = (horizontalSpacing / 2f).toInt()
+                        } else if (i == it.getCount() - 1) {
+                            marginStart = (horizontalSpacing / 2f).toInt()
+                            marginEnd = 0
+                        } else {
+                            marginStart = (horizontalSpacing / 2f).toInt()
+                            marginEnd = (horizontalSpacing / 2f).toInt()
+                        }
+                        topMargin = (verticalSpacing / 2f).toInt()
+                        bottomMargin = (verticalSpacing / 2f).toInt()
+                    }
+                )
+            }
+        }
+    }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
@@ -85,6 +124,9 @@ class FlowLayout : ViewGroup {
             val measureWidth = child.measuredWidth
             val measureHeight = child.measuredHeight
             //子view的margin
+            if (child.layoutParams !is MarginLayoutParams) {
+                child.layoutParams = MarginLayoutParams(child.layoutParams)
+            }
             marginParams = child.layoutParams as MarginLayoutParams
             //计算子view所占的宽高
             val childWidth = marginParams.leftMargin + marginParams.rightMargin + measureWidth
@@ -125,4 +167,21 @@ class FlowLayout : ViewGroup {
     }
 
 
+    abstract class BaseFlowAdapter {
+
+        private val observes = mutableListOf<(() -> Unit)?>()
+
+        fun registerObserver(observer: (() -> Unit)?) {
+            observes.add(observer)
+        }
+
+        abstract fun getCount(): Int
+        abstract fun getView(position: Int): View
+
+        fun notifyDataSetChanged() {
+            observes.forEach {
+                it?.invoke()
+            }
+        }
+    }
 }

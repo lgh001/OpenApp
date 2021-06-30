@@ -1,7 +1,5 @@
 package cn.lgh.openapp.ui.main.knowledgetree.adapter
 
-import android.os.Build
-import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View

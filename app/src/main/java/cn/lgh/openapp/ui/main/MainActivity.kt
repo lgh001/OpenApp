@@ -9,6 +9,7 @@ import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.main.common.CommonFragment
 import cn.lgh.openapp.ui.main.home.HomeFragment
 import cn.lgh.openapp.ui.main.knowledgetree.KnowledgeTreeFragment
+import cn.lgh.openapp.ui.search.SearchActivity
 import cn.lgh.openapp.utils.PermissionUtil
 import cn.lgh.openapp.widget.expand
 import cn.lgh.openapp.widget.toast
@@ -65,36 +66,23 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
             when (it.itemId) {
                 R.id.navigation_home -> {
                     showTab(0)
-                    v.tvTitle.text = getString(R.string.main_tab_home_text)
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_cate -> {
                     showTab(1)
-                    v.tvTitle.text = getString(R.string.main_tab_cate_text)
                     return@setOnNavigationItemSelectedListener true
                 }
                 R.id.navigation_common -> {
                     showTab(2)
-                    v.tvTitle.text = getString(R.string.main_tab_common_text)
                     return@setOnNavigationItemSelectedListener true
                 }
             }
             false
         }
-        val name=this.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath+"/xxx.txt"
         //搜索
-        v.ivSearch.expand(100,100)
+        v.ivSearch.expand(100, 100)
         v.ivSearch.setOnClickListener {
-            println("保存文件:$name")
-            PermissionUtil.addPermission(mContext, arrayOf(com.yanzhenjie.permission.runtime.Permission.WRITE_EXTERNAL_STORAGE),
-            granted = {
-                val file=File(name)
-                val fos=FileOutputStream(file)
-                fos.write("哈哈哈啊哈哈".toByteArray())
-                fos.flush()
-                fos.close()
-                println("保存成功：${file.name}")
-            })
+            SearchActivity.start(this)
         }
         //打开抽屉
         v.ivMenu.setOnClickListener {
@@ -110,6 +98,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 ////                FlutterActivity.withCachedEngine("flutter_engine")
 ////                    .build(this)
 //            )
+        }
+
+        v.etClear.setOnClickListener {
+            SearchActivity.start(this, it)
         }
     }
 

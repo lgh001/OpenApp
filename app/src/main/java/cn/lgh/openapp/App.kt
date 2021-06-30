@@ -8,6 +8,7 @@ import cn.lgh.openapp.widget.webview.WebViewTools
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.tencent.mmkv.MMKV
 
 
 /**
@@ -26,6 +27,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         Utils.init(this)
+        MMKV.initialize(this)
 
         SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout ->
             MaterialHeader(context).apply {
@@ -58,7 +60,6 @@ class App : Application() {
                 return DefaultErrorView(context)
             }
         }
-
 
 //        flutterEngine = FlutterEngine(this)
 //        flutterEngine.dartExecutor.executeDartEntrypoint(

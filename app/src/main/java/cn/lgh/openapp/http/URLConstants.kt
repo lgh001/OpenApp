@@ -71,4 +71,10 @@ object URLConstants {
      */
     const val GET_WX_ARTICLE_BY_ID="wxarticle/list/{id}/{page}/json"
 
+
+    /**
+     * 搜索
+     */
+    const val SEARCH_BY_KEY="article/query/{page}/json"
+
 }

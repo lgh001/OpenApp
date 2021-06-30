@@ -11,6 +11,7 @@ import okio.sink
 import okio.source
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 /**
  * @author lgh
@@ -154,7 +155,7 @@ class DiskCacheInterceptor(val config: CacheConfig) : ResourceInterceptor, Destr
         var contentType: String? = null
         if (headers != null) {
             val uppercaseKey = "Content-Type"
-            val lowercaseKey = uppercaseKey.toLowerCase()
+            val lowercaseKey = uppercaseKey.lowercase(Locale.getDefault())
             val contentTypeValue =
                 if (headers.containsKey(uppercaseKey)) headers[uppercaseKey] else headers[lowercaseKey]
             if (!TextUtils.isEmpty(contentTypeValue)) {

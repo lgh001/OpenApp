@@ -39,6 +39,9 @@
         <activity android:name=".ui.main.articlelist.ArticleListActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ui.main.webview.WebViewActivity"/>
+        <activity android:name=".ui.search.SearchActivity"
+            android:windowSoftInputMode="adjustResize"
+            />
 
         <!--        <activity-->
         <!--            android:name="io.flutter.embedding.android.FlutterActivity"-->
