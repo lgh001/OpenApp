@@ -18,4 +18,10 @@
         android:icon="@mipmap/ic_common_normal"
         android:title="@string/main_tab_common_text"
         />
+
+    <item
+        android:id="@+id/navigation_qa"
+        android:icon="@mipmap/ic_common_normal"
+        android:title="@string/main_tab_qa_text"
+        />
 </menu>

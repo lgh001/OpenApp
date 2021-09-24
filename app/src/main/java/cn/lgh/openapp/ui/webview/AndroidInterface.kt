@@ -1,4 +1,4 @@
-package cn.lgh.openapp.ui.main.webview
+package cn.lgh.openapp.ui.webview
 
 import android.content.Context
 import com.just.agentweb.AgentWeb

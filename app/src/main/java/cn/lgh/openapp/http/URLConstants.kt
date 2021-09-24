@@ -77,4 +77,15 @@ object URLConstants {
      */
     const val SEARCH_BY_KEY="article/query/{page}/json"
 
+    /**
+     * 问答列表
+     */
+    const val GET_QA_LIST="wenda/list/{page}/json"
+
+
+    /**
+     * 问答列表
+     * id： 问答 id，可以通过问答列表获取
+     */
+    const val GET_QA_COMMENT_LIST="wenda/comments/{id}/json"
 }

@@ -14,6 +14,9 @@ interface ApiService {
     @GET("")
     fun login(): Deferred<String>
 
+    @HEAD("/")
+    suspend fun preLoad():Void
+
     @GET(URLConstants.GET_ARTICLE_LIST_URL)
     suspend fun getArticleList(@Path("page") page: Int): BaseResult<Article>
 
@@ -47,4 +50,10 @@ interface ApiService {
         @FieldMap params: Map<String, String?>,
         @Path("page") page: Int
     ): BaseResult<Article>
+
+    @GET(URLConstants.GET_QA_LIST)
+    suspend fun getQAList(@Path("page") page: Int): BaseResult<Article>
+
+    @GET(URLConstants.GET_QA_COMMENT_LIST)
+    suspend fun getCommentById(@Path("id") id:Int):BaseResult<Article>
 }

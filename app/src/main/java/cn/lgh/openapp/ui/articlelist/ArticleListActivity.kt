@@ -1,4 +1,4 @@
-package cn.lgh.openapp.ui.main.articlelist
+package cn.lgh.openapp.ui.articlelist
 
 import android.content.Context
 import android.content.Intent
@@ -8,12 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.bean.ArticleInfo
 import cn.lgh.openapp.databinding.ActivityArticleListBinding
 import cn.lgh.openapp.ui.base.BaseActivity
-import cn.lgh.openapp.ui.main.articlelist.vm.ArticleListViewModel
+import cn.lgh.openapp.ui.articlelist.vm.ArticleListViewModel
 import cn.lgh.openapp.ui.main.home.adapter.ArticleAdapter
-import cn.lgh.openapp.ui.main.webview.WebViewActivity
+import cn.lgh.openapp.ui.webview.WebViewActivity
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.ItemDecorationWidget
-import cn.lgh.openapp.widget.toast
 import kotlinx.android.synthetic.main.view_title_bar.*
 
 /**

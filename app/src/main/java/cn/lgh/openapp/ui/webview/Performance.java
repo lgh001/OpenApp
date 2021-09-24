@@ -1,4 +1,4 @@
-package cn.lgh.openapp.ui.main.webview;
+package cn.lgh.openapp.ui.webview;
 
 /**
  * Created by Ryan

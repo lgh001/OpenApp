@@ -2,7 +2,6 @@ package cn.lgh.openapp.ui.search
 
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -10,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.bean.ArticleInfo
 import cn.lgh.openapp.databinding.ActivitySearchBinding
 import cn.lgh.openapp.ui.base.BaseActivity
-import cn.lgh.openapp.ui.main.webview.WebViewActivity
+import cn.lgh.openapp.ui.webview.WebViewActivity
 import cn.lgh.openapp.ui.search.adapter.SearchAdapter
 import cn.lgh.openapp.ui.search.vm.SearchViewModel
 import cn.lgh.openapp.utils.Utils

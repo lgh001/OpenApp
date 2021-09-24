@@ -11,7 +11,7 @@ import cn.lgh.openapp.ui.base.BaseFragment
 import cn.lgh.openapp.ui.main.home.adapter.ArticleAdapter
 import cn.lgh.openapp.ui.main.home.adapter.HomeBannerAdapter
 import cn.lgh.openapp.ui.main.home.vm.HomeViewModel
-import cn.lgh.openapp.ui.main.webview.WebViewActivity
+import cn.lgh.openapp.ui.webview.WebViewActivity
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.ItemDecorationWidget
 import com.youth.banner.Banner

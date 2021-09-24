@@ -1,6 +1,5 @@
-package cn.lgh.openapp.ui.main.articlelist.vm
+package cn.lgh.openapp.ui.articlelist.vm
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import cn.lgh.openapp.bean.ArticleInfo

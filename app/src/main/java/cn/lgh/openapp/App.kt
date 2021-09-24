@@ -2,6 +2,7 @@ package cn.lgh.openapp
 
 import android.app.Application
 import android.content.Context
+import cn.lgh.openapp.http.retrofit.RetrofitClient
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.pagestate.*
 import cn.lgh.openapp.widget.webview.WebViewTools
@@ -9,12 +10,15 @@ import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.MaterialHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 
 /**
  * @author lgh
  * @date 2020/9/25
- *
+ * app
  */
 class App : Application() {
 
@@ -28,6 +32,13 @@ class App : Application() {
         super.onCreate()
         Utils.init(this)
         MMKV.initialize(this)
+        MainScope().launch(Dispatchers.IO) {
+            try {
+                RetrofitClient.getInstance().create().preLoad()
+            }catch (e:Exception){
+                e.printStackTrace()
+            }
+        }
 
         SmartRefreshLayout.setDefaultRefreshHeaderCreator { context, layout ->
             MaterialHeader(context).apply {

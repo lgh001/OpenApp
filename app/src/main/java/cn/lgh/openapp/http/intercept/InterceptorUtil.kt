@@ -24,15 +24,13 @@ object InterceptorUtil{
     }
 
     fun getInterceptor():Interceptor{
-        return object : Interceptor{
-            override fun intercept(chain: Interceptor.Chain): Response {
-                val request=chain.request()
-                val response=chain.proceed(request)
-                val buffer=response.body?.source()?.buffer?.copy()
-                val res=buffer.toString()
-                LogUtils.i("api：${request.url} \n 响应：$res")
-                return response
-            }
+        return Interceptor { chain ->
+            val request=chain.request()
+            val response=chain.proceed(request)
+            val buffer=response.body?.source()?.buffer?.copy()
+            val res=buffer.toString()
+            LogUtils.i("api：${request.url} \n 响应：$res")
+            response
         }
     }
 }

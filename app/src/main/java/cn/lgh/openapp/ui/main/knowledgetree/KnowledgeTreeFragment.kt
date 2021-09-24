@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.bean.Leaf
 import cn.lgh.openapp.databinding.FragmentKnowledgeTreeBinding
 import cn.lgh.openapp.ui.base.BaseFragment
-import cn.lgh.openapp.ui.main.articlelist.ArticleListActivity
+import cn.lgh.openapp.ui.articlelist.ArticleListActivity
 import cn.lgh.openapp.ui.main.knowledgetree.adapter.KnowledgeTreeAdapter
 import cn.lgh.openapp.ui.main.knowledgetree.vm.KnowledgeTreeViewModel
 import cn.lgh.openapp.utils.Utils

@@ -7,7 +7,7 @@ import cn.lgh.openapp.databinding.FragmentWxArticleBinding
 import cn.lgh.openapp.ui.base.BaseFragment
 import cn.lgh.openapp.ui.main.common.adapter.WXArticlesAdapter
 import cn.lgh.openapp.ui.main.common.vm.CommonViewModel
-import cn.lgh.openapp.ui.main.webview.WebViewActivity
+import cn.lgh.openapp.ui.webview.WebViewActivity
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.ItemDecorationWidget
 

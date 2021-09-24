@@ -1,4 +1,4 @@
-package cn.lgh.openapp.ui.main.webview
+package cn.lgh.openapp.ui.webview
 
 import android.content.Context
 import android.content.Intent
@@ -13,7 +13,6 @@ import cn.lgh.openapp.databinding.ActivityWebViewBinding
 import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.base.BaseViewModel
 import cn.lgh.openapp.widget.toast
-import cn.lgh.openapp.widget.webview.WebViewTools
 import cn.lgh.openapp.widget.webview.cache.WebViewClientDelegate
 import com.google.gson.Gson
 import com.just.agentweb.AgentWeb
