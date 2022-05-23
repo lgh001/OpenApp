@@ -21,17 +21,12 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.lang.reflect.ParameterizedType
 
-/**
- * @author lgh
- * @date 2020/9/27
- * activity基类  页面尽可能继承此类
- */
-abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatActivity(), IProcess,
-    IRefresh {
+abstract class BaseActivityLazy : AppCompatActivity() ,IProcess,
+IRefresh{
 
     lateinit var mContext: Context
-    lateinit var vm: VM
-    lateinit var v: VB
+    abstract val vm: BaseViewModel
+    abstract val v: ViewBinding
 
 
     var mRefreshLayout: SmartRefreshLayout? = null
@@ -50,14 +45,14 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         //type.actualTypeArguments[0]=BaseViewModel，type.actualTypeArguments[1]=ViewBinding
         //主要根据类的泛型，BaseActivity<VM:BaseViewModel,VB:ViewBinding>
         //可以看到第一个是 VM:BaseViewModel
-        val type = javaClass.genericSuperclass as ParameterizedType
-        val clz1 = type.actualTypeArguments[0] as Class<VM>
-        vm = ViewModelProvider(this)[clz1]
-
-        val clz2 = type.actualTypeArguments[1] as Class<VB>
-        //通过反射获取vb
-        val method = clz2.getMethod("inflate", LayoutInflater::class.java)
-        v = method.invoke(null, layoutInflater) as VB
+//        val type = javaClass.genericSuperclass as ParameterizedType
+//        val clz1 = type.actualTypeArguments[0] as Class<VM>
+//        vm = ViewModelProvider(this)[clz1]
+//
+//        val clz2 = type.actualTypeArguments[1] as Class<VB>
+//        //通过反射获取vb
+//        val method = clz2.getMethod("inflate", LayoutInflater::class.java)
+//        v = method.invoke(null, layoutInflater) as VB
         val view = if (hasRefresh()) setupRefreshLayout(v.root) else v.root
         setContentView(view)
         mContext = this
@@ -170,7 +165,7 @@ abstract class BaseActivity<VM : BaseViewModel, VB : ViewBinding> : AppCompatAct
         }
     }
 
-    fun setupPageState(contentView:View){
+    fun setupPageState(contentView: View){
         mPageState.setupContentView(contentView)
     }
 

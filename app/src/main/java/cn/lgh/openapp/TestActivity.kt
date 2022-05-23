@@ -1,18 +1,23 @@
 package cn.lgh.openapp
 
 import android.os.Bundle
+import androidx.activity.viewModels
+import androidx.viewbinding.ViewBinding
 import cn.lgh.openapp.databinding.ActivityTestBinding
 import cn.lgh.openapp.ui.base.BaseActivity
+import cn.lgh.openapp.ui.base.BaseActivityLazy
 import cn.lgh.openapp.ui.base.BaseViewModel
-//import io.flutter.embedding.android.FlutterActivity
-//import io.flutter.embedding.android.FlutterActivityLaunchConfigs
+import cn.lgh.openapp.ui.base.viewBindings
 
 /**
  * @author lgh
  * @date 2020/12/14
  *
  */
-class TestActivity : BaseActivity<BaseViewModel,ActivityTestBinding>() {
+class TestActivity : BaseActivityLazy() {
+    override val vm by viewModels<BaseViewModel>();
+    override val v by viewBindings(ActivityTestBinding::inflate)
+
     override fun initView() {}
 
     override fun initListener() {
@@ -28,4 +33,21 @@ class TestActivity : BaseActivity<BaseViewModel,ActivityTestBinding>() {
     override fun initData(bundle: Bundle?) {}
 
     override fun initVM() {}
+
+    fun getAllThreads():MutableList<Thread>{
+        var group = Thread.currentThread().threadGroup;
+        var system:ThreadGroup?
+        do{
+            system = group
+            group = group?.parent
+        }while (group!=null)
+        val count = system?.activeCount()?:0
+        val threads = arrayOfNulls<Thread>(count)
+        system?.enumerate(threads)
+        val list = mutableListOf<Thread>()
+        threads.forEach {
+            it?.let { it1-> list.add(it1) }
+        }
+        return list
+    }
 }

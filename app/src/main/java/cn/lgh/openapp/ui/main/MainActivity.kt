@@ -1,6 +1,9 @@
 package cn.lgh.openapp.ui.main
 
 import android.os.Bundle
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginBottom
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import cn.lgh.openapp.R
 import cn.lgh.openapp.databinding.ActivityMainBinding
@@ -10,12 +13,15 @@ import cn.lgh.openapp.ui.main.home.HomeFragment
 import cn.lgh.openapp.ui.main.knowledgetree.KnowledgeTreeFragment
 import cn.lgh.openapp.ui.main.mine.QAFragment
 import cn.lgh.openapp.ui.search.SearchActivity
+import cn.lgh.openapp.utils.StatusBarUtil
+import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.expand
 import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.viewpager.BaseFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.DefautFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.FragmentInfo
 import com.google.gson.Gson
+import com.gyf.immersionbar.ImmersionBar
 
 //import io.flutter.embedding.android.FlutterActivity
 
@@ -38,7 +44,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 //        ImmersionBar.with(this)
 //            .transparentBar()
 //            .statusBarColor(R.color.app_main_color)
-//            .titleBarMarginTop(container)
+//            .titleBarMarginTop(v.container)
 //            .autoDarkModeEnable(true)
 //            .init()
         mFragmentAdapter =
@@ -57,6 +63,10 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 //            fragments1[1],
 //            fragments1[2]
 //        )
+//        v.container.setPadding(0, 0, 0, StatusBarUtil.getNavBarHeight(this))
+        v.mainNavigation.updateLayoutParams {
+            height = Utils.getRealPixel(100) + StatusBarUtil.getNavBarHeight(this@MainActivity)
+        }
     }
 
     override fun initListener() {

@@ -1038,6 +1038,27 @@ public class StatusBarUtil {
 
     }
 
+    /**
+     * 获取底部navigator的高度
+     **/
+    public static int getNavBarHeight(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display d = windowManager.getDefaultDisplay();
+
+        DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+
+        d.getRealMetrics(realDisplayMetrics);
+
+        int realHeight = realDisplayMetrics.heightPixels;
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+
+        d.getMetrics(displayMetrics);
+
+        int displayHeight = displayMetrics.heightPixels;
+        return realHeight - displayHeight;
+    }
+
 
     /**
      * 设置Android状态栏的字体颜色，状态栏为亮色的时候字体和图标是黑色，状态栏为暗色的时候字体和图标为白色

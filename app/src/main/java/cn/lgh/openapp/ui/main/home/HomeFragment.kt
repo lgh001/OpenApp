@@ -2,6 +2,7 @@ package cn.lgh.openapp.ui.main.home
 
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import cn.lgh.openapp.R
 import cn.lgh.openapp.bean.ArticleInfo
@@ -19,7 +20,7 @@ import com.youth.banner.Banner
 /**
  * @author lgh
  * @date 2020/9/30
- *
+ * 首页
  */
 class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
@@ -50,6 +51,8 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
         adapter?.addHeaderView(banner!!)
 
         mRefreshLayout?.setEnableLoadMore(true)
+        val helper = ItemTouchHelper(MyCallBack())
+        helper.attachToRecyclerView(v.recyclerView)
     }
 
     override fun initListener() {
@@ -66,10 +69,15 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
     }
 
     override fun initVM() {
-        vm.banner.observe(this, Observer {
+        vm.banner.observe(this) {
             val bannerAdapter = HomeBannerAdapter(it)
+            bannerAdapter.setOnBannerListener { _, position ->
+                vm.banner.value?.get(position)?.let { info ->
+                    WebViewActivity.start(context, info.url)
+                }
+            }
             banner?.adapter = bannerAdapter
-        })
+        }
         vm.articleListData.observe(this, Observer {
             listData.addAll(it)
             v.recyclerView.adapter?.notifyDataSetChanged()
