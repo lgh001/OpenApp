@@ -50,7 +50,7 @@ class FlyView @JvmOverloads constructor(
     }
 
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (!isOffsetAnimEnd) {
             mPaint.alpha = 255.coerceAtMost((255 * mOffsetAnimProgress).toInt() + 100)
@@ -96,7 +96,7 @@ class FlyView @JvmOverloads constructor(
             invalidate()
         }
         anim.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
                 if (mGradientAnim != null) {
                     isOffsetAnimEnd = true

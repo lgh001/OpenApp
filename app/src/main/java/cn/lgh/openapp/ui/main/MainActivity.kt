@@ -6,6 +6,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import cn.lgh.openapp.R
+import cn.lgh.openapp.TestActivity
 import cn.lgh.openapp.databinding.ActivityMainBinding
 import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.main.common.CommonFragment
@@ -16,6 +17,7 @@ import cn.lgh.openapp.ui.search.SearchActivity
 import cn.lgh.openapp.utils.StatusBarUtil
 import cn.lgh.openapp.utils.Utils
 import cn.lgh.openapp.widget.expand
+import cn.lgh.openapp.widget.startActivity
 import cn.lgh.openapp.widget.toast
 import cn.lgh.openapp.widget.viewpager.BaseFragmentStatePagerAdapter
 import cn.lgh.openapp.widget.viewpager.DefautFragmentStatePagerAdapter
@@ -110,6 +112,7 @@ class MainActivity : BaseActivity<MainViewModel, ActivityMainBinding>() {
 ////                FlutterActivity.withCachedEngine("flutter_engine")
 ////                    .build(this)
 //            )
+            startActivity<TestActivity>()
         }
 
         v.etClear.setOnClickListener {

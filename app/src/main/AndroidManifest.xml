@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="cn.lgh.openapp">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -69,6 +73,7 @@
 
         <service
             android:name=".widget.webview.WebStartService"
+            android:exported="true"
             android:process=":web" />
     </application>
 

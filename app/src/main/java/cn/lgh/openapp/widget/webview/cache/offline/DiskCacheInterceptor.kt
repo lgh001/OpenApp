@@ -32,7 +32,7 @@ class DiskCacheInterceptor(val config: CacheConfig) : ResourceInterceptor, Destr
 
         try {
             mDiskLruCache = DiskLruCache.open(
-                File(config.cacheDir),
+                config.cacheDir?.let { File(it) },
                 config.version,
                 ENTRY_COUNT,
                 config.diskCacheSize
@@ -67,16 +67,16 @@ class DiskCacheInterceptor(val config: CacheConfig) : ResourceInterceptor, Destr
             val reasonPhrase = buffer.readUtf8LineStrict()
             //2.read header
             var headerSize = buffer.readDecimalLong()
-            var headers: Map<String, String>
+            val headers: Map<String, String>
             val builder = Headers.Builder()
             val placeHolder = buffer.readUtf8LineStrict()
-            if (!placeHolder.trim().isNullOrEmpty()) {
+            if (placeHolder.trim().isNotEmpty()) {
                 builder.add(placeHolder)
                 headerSize--
             }
             for (i in 0 until headerSize) {
                 val line = buffer.readUtf8LineStrict()
-                if (!line.isNullOrEmpty()) {
+                if (line.isNotEmpty()) {
                     builder.add(line)
                 }
             }
@@ -110,17 +110,17 @@ class DiskCacheInterceptor(val config: CacheConfig) : ResourceInterceptor, Destr
             val os = editor.newOutputStream(ENTRY_META)
             var sink = os.sink().buffer()
             //1.写入 status
-            sink.writeUtf8("${resource?.responseCode}").writeByte('\n'.toInt())
-            sink.writeUtf8("${resource?.reasonPhrase}").writeByte('\n'.toInt())
+            sink.writeUtf8("${resource?.responseCode}").writeByte('\n'.code)
+            sink.writeUtf8("${resource?.reasonPhrase}").writeByte('\n'.code)
             //2.写入 response header
             val headers = resource?.responseHeaders
-            sink.writeDecimalLong(headers?.size?.toLong() ?: 0L).writeByte('\n'.toInt())
+            sink.writeDecimalLong(headers?.size?.toLong() ?: 0L).writeByte('\n'.code)
             headers?.let {
                 for (entry in it.entries) {
                     sink.writeUtf8(entry.key)
                         .writeUtf8(":")
                         .writeUtf8(entry.value)
-                        .writeByte('\n'.toInt())
+                        .writeByte('\n'.code)
                 }
             }
             sink.flush()

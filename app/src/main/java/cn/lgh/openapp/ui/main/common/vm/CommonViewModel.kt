@@ -29,7 +29,9 @@ class CommonViewModel : BaseViewModel() {
             request (isShowLoading = true,block={
                 repo.getWXArticleList()
             })?.let {
-                authorList.value = it.data
+                it.data?.let {data ->
+                    authorList.value = data
+                }
             }
         }
     }

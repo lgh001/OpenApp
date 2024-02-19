@@ -22,7 +22,9 @@ class KnowledgeTreeViewModel : BaseViewModel() {
             request {
                 repo.getKnowledgeTree()
             }?.let {
-                knowledgeTree.value = it.data
+                it.data.let { data ->
+                    knowledgeTree.value = data
+                }
             }
         }
     }

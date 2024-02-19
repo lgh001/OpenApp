@@ -3,6 +3,7 @@ package cn.lgh.openapp.widget.webview.cache.offline
 import android.text.TextUtils
 import android.webkit.WebResourceResponse
 import cn.lgh.openapp.widget.webview.cache.utils.CacheLog
+import java.util.Locale
 
 /**
  * @author lgh
@@ -60,7 +61,7 @@ class DefaultWebResponseGenerator : WebResourceResponseGenerator {
     ): String? {
         if (headers != null) {
             val value = headers[key]
-            return value ?: headers[key.toLowerCase()]
+            return value ?: headers[key.lowercase(Locale.ROOT)]
         }
         return null
     }

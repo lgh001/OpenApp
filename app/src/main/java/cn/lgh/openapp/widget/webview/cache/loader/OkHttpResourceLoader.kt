@@ -28,7 +28,7 @@ class OkHttpResourceLoader() : ResourceLoader {
         if (!url.startsWith("http") || !url.startsWith("https")) return null
         val httpClient = OkHttpClientProvider.get()
         //CacheControl?
-        val userAgent = request?.userAgent ?: DEFAULT_USER_AGENT
+        val userAgent = request.userAgent ?: DEFAULT_USER_AGENT
         val acceptLanguage = Locale.getDefault().language
         val requestBuilder = Request.Builder()
             .removeHeader(HEADER_USER_AGENT)
@@ -36,7 +36,7 @@ class OkHttpResourceLoader() : ResourceLoader {
             .addHeader("Upgrade-Insecure-Requests", "1")
             .addHeader("Accept", "*/*")
             .addHeader("Accept-Language", acceptLanguage)
-        request?.headers?.let {
+        request.headers?.let {
             for (entry in it) {
                 val key = entry.key
                 if (!isNeedStripHeader(key)) {
@@ -58,7 +58,7 @@ class OkHttpResourceLoader() : ResourceLoader {
                 webResource.responseCode = response.code
                 webResource.reasonPhrase = response.message
                 webResource.isModified = response.code != HttpURLConnection.HTTP_NOT_MODIFIED
-                response?.body?.let {
+                response.body?.let {
                     webResource.originBytes = it.bytes()
                 }
                 webResource.responseHeaders = HeaderUtils.generateHeadersMap(response.headers)

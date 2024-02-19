@@ -1,7 +1,7 @@
 package cn.lgh.openapp.utils
 
-import android.content.Context
-import com.yanzhenjie.permission.AndPermission
+import androidx.fragment.app.FragmentActivity
+import com.permissionx.guolindev.PermissionX
 
 /**
  * @author lgh
@@ -11,21 +11,29 @@ import com.yanzhenjie.permission.AndPermission
 object PermissionUtil {
 
     fun addPermission(
-        context: Context,
-        permissions: Array<String>,
+        activity: FragmentActivity,
+        permissions: List<String>,
         granted: ((MutableList<String>) -> Unit)? = null,
         denied: ((MutableList<String>) -> Unit)? = null
     ) {
-        AndPermission
-            .with(context)
-            .runtime()
-            .permission(permissions)
-            .onGranted {
-                granted?.invoke(it)
+        PermissionX.init(activity).permissions(permissions)
+            .request { allGranted, grantedList, deniedList ->
+                if (allGranted) {
+                    granted?.invoke(grantedList)
+                } else {
+                    denied?.invoke(deniedList)
+                }
             }
-            .onDenied {
-                denied?.invoke(it)
-            }
-            .start()
+//        AndPermission
+//            .with(context)
+//            .runtime()
+//            .permission(permissions)
+//            .onGranted {
+//                granted?.invoke(it)
+//            }
+//            .onDenied {
+//                denied?.invoke(it)
+//            }
+//            .start()
     }
 }

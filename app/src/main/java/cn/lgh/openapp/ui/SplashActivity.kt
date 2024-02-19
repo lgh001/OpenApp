@@ -9,12 +9,7 @@ import cn.lgh.openapp.ui.main.MainActivity
 import cn.lgh.openapp.databinding.ActivitySplashBinding
 import cn.lgh.openapp.ui.base.BaseActivity
 import cn.lgh.openapp.ui.base.BaseViewModel
-import cn.lgh.openapp.utils.PermissionUtil
-import cn.lgh.openapp.utils.StatusBarUtil
-import cn.lgh.openapp.widget.toast
 import com.gyf.immersionbar.ImmersionBar
-import com.yanzhenjie.permission.runtime.Permission
-import kotlinx.android.synthetic.main.activity_main.view.*
 
 /**
  * @author lgh
@@ -35,16 +30,16 @@ class SplashActivity : BaseActivity<BaseViewModel, ActivitySplashBinding>() {
                 return
             }
         }
-        PermissionUtil.addPermission(this,
-            Permission.Group.STORAGE,
-            granted = {
-                init()
-            },
-            denied = {
-                toast("您拒绝了文件权限")
-
-            })
-
+//        PermissionUtil.addPermission(this,
+//            arrayListOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+//            granted = {
+//                init()
+//            },
+//            denied = {
+//                toast("您拒绝了文件权限")
+//
+//            })
+        init()
         v.flyView.setText("Believe In Technology")
         v.flyView.setTextColor(resources.getColor(R.color.app_main_color))
     }
