@@ -52,6 +52,8 @@ class TestActivity : BaseActivityLazy() {
     override fun initVM() {}
 
     fun getAllThreads():MutableList<Thread>{
+        val ss = "";
+
         var group = Thread.currentThread().threadGroup;
         var system:ThreadGroup?
         do{
@@ -65,6 +67,7 @@ class TestActivity : BaseActivityLazy() {
         threads.forEach {
             it?.let { it1-> list.add(it1) }
         }
+        Persion("哈哈哈",null,"");
         return list
     }
 
@@ -73,3 +76,5 @@ class TestActivity : BaseActivityLazy() {
         phoneCall?.stopListening()
     }
 }
+
+class Persion(val aa:String? = null,var bb:String?,val dd:String)
