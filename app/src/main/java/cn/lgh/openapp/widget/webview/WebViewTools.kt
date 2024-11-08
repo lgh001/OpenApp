@@ -36,7 +36,7 @@ class WebViewTools private constructor() {
         }
     }
 
-    private var mPool: WebViewPool<String, IWebView>? = null
+    private var mPool: WebViewPool<IWebView>? = null
 
     fun init(context: Context, preLoad: Array<String>? = arrayOf()) {
         println("初始化")
@@ -62,7 +62,7 @@ class WebViewTools private constructor() {
     fun get(context: Context, url: String?): IWebView? {
         val view=mPool?.get(url)
         if (view?.get() != null) {
-            val contextWrapper = view?.get().context as MutableContextWrapper
+            val contextWrapper = view.get().context as MutableContextWrapper
             contextWrapper.baseContext = context
         }
         return view
@@ -70,7 +70,7 @@ class WebViewTools private constructor() {
 
     fun release(webView: IWebView?) {
         if (webView?.get() == null) return
-        val contextWrapper = webView?.get().context as MutableContextWrapper
+        val contextWrapper = webView.get().context as MutableContextWrapper
         contextWrapper.baseContext = contextWrapper.applicationContext
         remove(webView)
 //        if (webView.isRelease) {
@@ -83,9 +83,9 @@ class WebViewTools private constructor() {
 
     fun remove(webView: IWebView?) {
         val viewGroup = webView?.get()?.parent as ViewGroup
-        viewGroup?.removeView(webView.get())
-        webView.get()?.removeAllViews()
-        webView.get()?.webChromeClient = null
+        viewGroup.removeView(webView.get())
+        webView.get().removeAllViews()
+        webView.get().webChromeClient = null
 //        webView?.get().webChromeClient = null
     }
 

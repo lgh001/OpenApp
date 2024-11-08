@@ -15,7 +15,7 @@ import cn.lgh.openapp.widget.webview.cache.WebViewClientDelegate
  * @date 2021/5/18
  *
  */
-class WebViewPool<K : String, V : IWebView>(
+class WebViewPool<V : IWebView>(
     val context: Context,
     preLoad: Array<String>? = arrayOf()
 ) {
